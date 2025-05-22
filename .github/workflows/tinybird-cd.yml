@@ -19,5 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Tinybird CLI
         run: curl https://tinybird.co | sh
+      - name: Going Tinybird Folder
+        run: cd tinybird/
       - name: Deploy project
         run: tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy
