@@ -1,0 +1,24 @@
+
+NODE materialize_spot
+DESCRIPTION >
+    Filter records for the national demand
+
+SQL >
+
+    SELECT
+            last_update,
+            datetime,
+            datetime_utc,
+            tz_time,
+            geo_id,
+            geo_name,
+            metric_id,
+            metric_name,
+            value
+        FROM landing_ds
+    WHERE metric_id = 600
+
+TYPE materialized
+DATASOURCE daily_spot_mv
+
+

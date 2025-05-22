@@ -1,0 +1,12 @@
+NODE generation_node
+DESCRIPTION >
+    Generation timeseries
+
+SQL >
+    SELECT
+        toTimezone(datetime, 'Europe/Madrid') datetime,
+        metric_name,
+        value
+    FROM generation_mv
+
+TYPE ENDPOINT

@@ -1,0 +1,12 @@
+NODE national_demand_node
+DESCRIPTION >
+    Generation timeseries
+
+SQL >
+    SELECT
+        toTimezone(datetime, 'Europe/Madrid') datetime,
+        metric_name,
+        value
+    FROM  national_demand_mv
+
+TYPE ENDPOINT

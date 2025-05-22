@@ -1,0 +1,24 @@
+
+NODE materialize
+DESCRIPTION >
+    Filter records for the demand
+
+SQL >
+
+    SELECT
+            last_update,
+            datetime,
+            datetime_utc,
+            tz_time,
+            geo_id,
+            geo_name,
+            metric_id,
+            metric_name,
+            value
+        FROM landing_ds
+    WHERE metric_id = 1293
+
+TYPE materialized
+DATASOURCE peninsular_demand_mv
+
+

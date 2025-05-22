@@ -1,0 +1,24 @@
+
+NODE materialize
+DESCRIPTION >
+    Filter records for estimated generation metrics
+
+SQL >
+
+    SELECT
+            last_update,
+            datetime,
+            datetime_utc,
+            tz_time,
+            geo_id,
+            geo_name,
+            metric_id,
+            metric_name,
+            value
+        FROM landing_ds
+    WHERE metric_id IN (542, 543, 10034)
+
+TYPE materialized
+DATASOURCE estimated_generation_mv
+
+

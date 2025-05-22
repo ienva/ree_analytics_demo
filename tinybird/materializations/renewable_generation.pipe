@@ -1,0 +1,28 @@
+
+NODE materialize
+DESCRIPTION >
+    Filter records for generation metrics
+
+SQL >
+
+    SELECT
+            last_update,
+            datetime,
+            datetime_utc,
+            tz_time,
+            geo_id,
+            geo_name,
+            metric_id,
+            metric_name original_metric_name,
+            CASE 
+                WHEN metric_id IN (10351, 10353) THEN 'Nacional Renewable Generation'
+                ELSE 'Nacional Non Renewable Generation' 
+            END metric_name,
+            value
+        FROM landing_ds
+    WHERE metric_id IN (10351, 10352, 10353, 10354)
+
+TYPE materialized
+DATASOURCE renewable_generation_mv
+
+

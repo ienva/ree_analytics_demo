@@ -1,0 +1,24 @@
+
+NODE materialize
+DESCRIPTION >
+    Filter records for generation metrics
+
+SQL >
+
+    SELECT
+            last_update,
+            datetime,
+            datetime_utc,
+            tz_time,
+            geo_id,
+            geo_name,
+            metric_id,
+            metric_name,
+            value
+        FROM landing_ds
+    WHERE metric_id IN (2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051)
+
+TYPE materialized
+DATASOURCE generation_mv
+
+

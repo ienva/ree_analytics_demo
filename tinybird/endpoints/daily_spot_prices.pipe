@@ -1,0 +1,12 @@
+NODE spot_node
+DESCRIPTION >
+    Spot Prices timeseries
+
+SQL >
+    SELECT
+        toTimezone(datetime, 'Europe/Madrid') datetime,
+        geo_name,
+        value
+    FROM daily_spot_mv
+
+TYPE ENDPOINT

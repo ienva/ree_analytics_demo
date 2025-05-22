@@ -1,0 +1,39 @@
+NODE generation_rew_node
+DESCRIPTION >
+    Generation timeseries
+
+SQL >
+    SELECT
+        toTimezone(datetime, 'Europe/Madrid') datetime,
+        metric_name,
+        sum(value) value
+    FROM renewable_generation_mv 
+    GROUP BY datetime, metric_name
+
+NODE all_generation_renew
+DESCRIPTION >
+    All generation aggregated
+
+SQL >
+    SELECT
+        toTimezone(datetime, 'Europe/Madrid') datetime,
+        sum(value) as total_gen
+    FROM generation_rew_node
+    GROUP BY datetime
+
+
+NODE stats_final
+DESCRIPTION >
+    All stats
+
+SQL >
+    SELECT 
+        fs.datetime,
+        fs.metric_name,
+        fs.value/ls.total_gen gen_perc
+    FROM generation_rew_node fs
+    LEFT JOIN all_generation_renew ls
+    ON fs.datetime = ls.datetime
+
+    
+TYPE ENDPOINT
