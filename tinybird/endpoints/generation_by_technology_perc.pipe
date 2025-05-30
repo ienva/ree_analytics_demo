@@ -4,11 +4,13 @@ DESCRIPTION >
 
 SQL >
     SELECT
-        toTimezone(datetime, 'Europe/Madrid') datetime,
+        max(toTimezone(datetime, 'Europe/Madrid')) max_datetime,
         metric_name,
-        value
+        argMax(value, datetime) last_value
     FROM generation_mv
     WHERE value >= 0
+    AND toStartOfHour(datetime) >= now() - INTERVAL 6 HOUR
+    GROUP BY metric_name
 
 NODE all_generation
 DESCRIPTION >
@@ -16,10 +18,10 @@ DESCRIPTION >
 
 SQL >
     SELECT
-        toTimezone(datetime, 'Europe/Madrid') datetime,
-        sum(value) as total_gen
+        max_datetime,
+        sum(last_value) as total_gen
     FROM generation_perc_node
-    GROUP BY datetime
+    GROUP BY max_datetime
 
 
 NODE stats_final
@@ -28,12 +30,12 @@ DESCRIPTION >
 
 SQL >
     SELECT 
-        fs.datetime,
+        fs.max_datetime as datetime,
         fs.metric_name,
-        fs.value/ls.total_gen gen_perc
+        fs.last_value/ls.total_gen gen_perc
     FROM generation_perc_node fs
     LEFT JOIN all_generation ls
-    ON fs.datetime = ls.datetime
+    ON fs.max_datetime = ls.max_datetime
 
     
 TYPE ENDPOINT
