@@ -1,0 +1,19 @@
+DESCRIPTION >
+    Electric Generation Real-Time
+
+SCHEMA >
+    `last_update` DateTime,
+    `datetime` DateTime,
+    `datetime_utc` DateTime,
+    `tz_time` DateTime,
+    `geo_id` UInt16,
+    `geo_name` String,
+    `metric_id` UInt16,
+    `original_metric_name` String,
+    `metric_name` String,
+    `value` Float64
+
+ENGINE "ReplacingMergeTree"
+ENGINE_SORTING_KEY "metric_id, metric_name, datetime"
+ENGINE_PARTITION_KEY "toYYYYMM(datetime)"
+ENGINE_VER "last_update"

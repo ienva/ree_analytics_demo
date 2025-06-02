@@ -1,0 +1,16 @@
+DESCRIPTION >
+    Landing Electric Indicators
+
+SCHEMA >
+    `last_update` DateTime `json:$.last_update`,
+    `datetime` DateTime `json:$.datetime`,
+    `datetime_utc` DateTime `json:$.datetime_utc`,
+    `tz_time` DateTime `json:$.tz_time`,
+    `geo_id` UInt16 `json:$.geo_id`,
+    `geo_name` String `json:$.geo_name`,
+    `metric_id` UInt16 `json:$.metric_id`,
+    `metric_name` String `json:$.metric_name`,
+    `value` Float64  `json:$.value`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "metric_id, last_update"
