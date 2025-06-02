@@ -1,4 +1,3 @@
-
 name: Tinybird - CI Workflow
 
 on:
@@ -33,5 +32,9 @@ jobs:
         run: tb build
       - name: Test project
         run: tb test run
+      - name: Run Python tests
+        run: |
+          pip install pytest pyyaml
+          pytest ree_data_tracker/tests
       - name: Deployment check
         run: tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy --check
