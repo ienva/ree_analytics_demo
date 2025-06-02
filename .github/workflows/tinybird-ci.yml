@@ -35,6 +35,6 @@ jobs:
       - name: Run Python tests
         run: |
           pip install pytest pyyaml
-          pytest ree_data_tracker/tests
+          PYTHONPATH=ree_data_tracker/src pytest ree_data_tracker/tests
       - name: Deployment check
         run: tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy --check
