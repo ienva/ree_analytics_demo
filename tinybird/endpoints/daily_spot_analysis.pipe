@@ -27,10 +27,10 @@ SQL >
     FROM daily_spot_mv
     GROUP BY day, geo_name
 
-NODE daily_spot_analysis
+NODE daily_spot_analysis_node
 DESCRIPTION >
     Join daily stats with best/worst hours
-    
+
 SQL >
     SELECT
         s.day,
