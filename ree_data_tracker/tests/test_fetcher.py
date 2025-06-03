@@ -19,4 +19,4 @@ def test_fetch_data_success(mock_get):
 def test_fetch_data_failure(mock_get):
     mock_get.side_effect = requests.exceptions.RequestException("API error")
     result = fetcher.fetch_data(1, {})
-    assert result is None 
+    assert result is None
