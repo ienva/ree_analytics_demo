@@ -4,11 +4,11 @@ DESCRIPTION >
 
 SQL >
     SELECT
-        toTimezone(datetime, 'Europe/Madrid') datetime,
+        max(toTimezone(datetime, 'Europe/Madrid')) datetime,
         metric_name,
         sum(value) value
     FROM renewable_generation_mv 
-    GROUP BY datetime, metric_name
+    GROUP BY metric_name
 
 NODE all_generation_renew
 DESCRIPTION >
