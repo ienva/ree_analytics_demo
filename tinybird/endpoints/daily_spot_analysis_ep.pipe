@@ -9,6 +9,7 @@ SQL >
         avg_price,
         max_price,
         min_price,
+        day,
         best_hour,
         worst_hour
     FROM daily_spot_analysis_mv
