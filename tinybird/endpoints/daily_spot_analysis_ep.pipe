@@ -1,0 +1,21 @@
+
+NODE today_spot_analysis
+DESCRIPTION >
+    Today's daily spot price analysis (Europe/Madrid)
+
+SQL >
+    SELECT 
+        day,
+        geo_name,
+        avg_price,
+        max_price,
+        min_price,
+        best_price,
+        best_hour,
+        worst_price,
+        worst_hour
+    FROM daily_spot_analysis_mv
+    WHERE day = toDate(toTimezone(now(), 'Europe/Madrid'))
+    ORDER BY geo_name
+
+TYPE ENDPOINT 

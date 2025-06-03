@@ -1,0 +1,50 @@
+NODE daily_stats
+DESCRIPTION >
+    Daily average, max, min spot prices
+
+SQL >
+    SELECT
+        toDate(toTimezone(datetime, 'Europe/Madrid')) as day,
+        geo_name,
+        avg(value) as avg_price,
+        max(value) as max_price,
+        min(value) as min_price
+    FROM daily_spot_mv
+    GROUP BY day, geo_name
+
+NODE best_worst_hours
+DESCRIPTION >
+    Best and worst hours to consume energy (lowest/highest price per day)
+
+SQL >
+    SELECT
+        toDate(toTimezone(datetime, 'Europe/Madrid')) as day,
+        geo_name,
+        min(value) as best_price,
+        argMin(toHour(toTimezone(datetime, 'Europe/Madrid')), value) as best_hour,
+        max(value) as worst_price,
+        argMax(toHour(toTimezone(datetime, 'Europe/Madrid')), value) as worst_hour
+    FROM daily_spot_mv
+    GROUP BY day, geo_name
+
+NODE daily_spot_analysis_materialized
+DESCRIPTION >
+    Materialized daily spot price analysis
+
+SQL >
+    SELECT
+        s.day,
+        s.geo_name,
+        s.avg_price,
+        s.max_price,
+        s.min_price,
+        b.best_price,
+        b.best_hour,
+        b.worst_price,
+        b.worst_hour
+    FROM daily_stats s
+    LEFT JOIN best_worst_hours b
+    ON s.day = b.day AND s.geo_name = b.geo_name
+
+TYPE materialized
+DATASOURCE daily_spot_analysis_mv 
