@@ -45,5 +45,6 @@ SQL >
     FROM daily_stats s
     LEFT JOIN best_worst_hours b
     ON s.day = b.day AND s.geo_name = b.geo_name
+    ORDER BY day DESC
 
 TYPE ENDPOINT 
