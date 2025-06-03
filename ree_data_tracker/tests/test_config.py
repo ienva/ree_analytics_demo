@@ -10,3 +10,4 @@ credentials:
     with patch("builtins.open", mock_open(read_data=fake_yaml)):
         token = config.select_token('tinybird')
         assert token == "token123" 
+
