@@ -1,0 +1,17 @@
+DESCRIPTION >
+    Materialized daily spot price analysis (avg, max, min, best/worst hour)
+
+SCHEMA >
+    `day` Date,
+    `geo_name` String,
+    `avg_price` Float64,
+    `max_price` Float64,
+    `min_price` Float64,
+    `best_price` Float64,
+    `best_hour` UInt8,
+    `worst_price` Float64,
+    `worst_hour` UInt8
+
+ENGINE "ReplacingMergeTree"
+ENGINE_SORTING_KEY "day, geo_name"
+ENGINE_PARTITION_KEY "toYYYYMM(day)" 
