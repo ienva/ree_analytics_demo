@@ -11,3 +11,11 @@ credentials:
         token = config.select_token('tinybird')
         assert token == "token123" 
 
+def get_headers():
+    TOKEN = config.select_token(key='tinybird')
+    return {'Authorization': f'Bearer {TOKEN}'}
+
+def send_to_tinybird(payload, datasource, retries=3, delay=2):
+    headers = get_headers()
+    # ... rest of the function ...
+

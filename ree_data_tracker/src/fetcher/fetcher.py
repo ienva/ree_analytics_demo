@@ -4,19 +4,21 @@ import pytz
 import time
 from config.config import select_token
 
-API_TOKEN = select_token(key='ree_api')
-HEADERS = {
-    'Accept': 'application/json; application/vnd.esios-api-v1+json',
-    'Content-Type': 'application/json',
-    'x-api-key': API_TOKEN
-}
+def get_headers():
+    API_TOKEN = select_token(key='ree_api')
+    return {
+        'Accept': 'application/json; application/vnd.esios-api-v1+json',
+        'Content-Type': 'application/json',
+        'x-api-key': API_TOKEN
+    }
 
 # The max real-time that can be generated will be hourly
 def fetch_data(indicator_id, params, retries=3, delay=2):
     url = f'https://api.esios.ree.es/indicators/{indicator_id}'
+    headers = get_headers()
     for attempt in range(retries):
         try:
-            response = requests.get(url, headers=HEADERS, params=params)
+            response = requests.get(url, headers=headers, params=params)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -128,7 +130,7 @@ def get_estimated_generation():
 def get_indicators():
     url = url = f'https://api.esios.ree.es/indicators'
     
-    response = requests.get(url, headers=HEADERS)
+    response = requests.get(url, headers=get_headers())
     response.raise_for_status()
     return response.json()
 
