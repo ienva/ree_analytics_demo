@@ -1,9 +1,7 @@
-DATASOURCE daily_spot_mv
-
 NODE daily_stats
 DESCRIPTION >
     Daily average, max, min spot prices
-    
+
 SQL >
     SELECT
         toDate(toTimezone(datetime, 'Europe/Madrid')) as day,
