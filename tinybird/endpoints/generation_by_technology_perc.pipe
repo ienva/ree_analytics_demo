@@ -8,8 +8,6 @@ SQL >
         metric_name,
         argMax(value, datetime) last_value
     FROM generation_mv
-    WHERE value >= 0
-    AND toStartOfHour(datetime) >= now() - INTERVAL 6 HOUR
     GROUP BY metric_name
 
 NODE all_generation
@@ -21,6 +19,7 @@ SQL >
         max_datetime,
         sum(last_value) as total_gen
     FROM generation_perc_node
+    WHERE last_value >= 0
     GROUP BY max_datetime
 
 
@@ -36,6 +35,7 @@ SQL >
     FROM generation_perc_node fs
     LEFT JOIN all_generation ls
     ON fs.max_datetime = ls.max_datetime
+    WHERE fs.last_value >= 0
 
     
 TYPE ENDPOINT
