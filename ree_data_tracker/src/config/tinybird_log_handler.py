@@ -2,15 +2,15 @@ import logging
 import json
 from datetime import datetime
 import pytz
-from sender.tinybird_sender import send_to_tinybird
 
 class TinybirdLogHandler(logging.Handler):
-    def __init__(self, level=logging.NOTSET):
+    def __init__(self, level=logging.NOTSET, send_callback=None):
         super().__init__(level)
         self.buffer = []
         self.buffer_size = 100  # Number of logs to accumulate before sending
         self.last_send_time = datetime.now(pytz.UTC)
         self.send_interval = 60  # Send logs every 60 seconds
+        self.send_callback = send_callback
 
     def emit(self, record):
         try:
@@ -36,12 +36,12 @@ class TinybirdLogHandler(logging.Handler):
             print(f"Error in TinybirdLogHandler: {str(e)}")
 
     def flush(self):
-        if not self.buffer:
+        if not self.buffer or not self.send_callback:
             return
             
         try:
-            # Send logs to Tinybird
-            send_to_tinybird(self.buffer, 'tracker_logs')
+            # Send logs using the callback
+            self.send_callback(self.buffer, 'tracker_logs')
             
             # Clear buffer and update last send time
             self.buffer = []

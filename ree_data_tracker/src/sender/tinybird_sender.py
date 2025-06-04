@@ -4,6 +4,7 @@ from config.config import select_token
 import time
 from config.logging_config import setup_logger
 
+# Create logger without Tinybird handler to avoid circular import
 logger = setup_logger('tinybird_sender')
 
 def get_headers():

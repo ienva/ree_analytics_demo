@@ -9,7 +9,7 @@ log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)
 os.makedirs(log_dir, exist_ok=True)
 
 # Configure logging
-def setup_logger(name):
+def setup_logger(name, send_callback=None):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
@@ -32,13 +32,14 @@ def setup_logger(name):
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(console_formatter)
 
-    # Tinybird handler
-    tinybird_handler = TinybirdLogHandler(level=logging.INFO)
-    tinybird_handler.setFormatter(file_formatter)  # Use the same format as file logs
-
     # Add handlers to logger
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
-    logger.addHandler(tinybird_handler)
+
+    # Add Tinybird handler if callback is provided
+    if send_callback:
+        tinybird_handler = TinybirdLogHandler(level=logging.INFO, send_callback=send_callback)
+        tinybird_handler.setFormatter(file_formatter)
+        logger.addHandler(tinybird_handler)
 
     return logger 

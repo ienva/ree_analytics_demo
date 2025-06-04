@@ -4,7 +4,8 @@ import time
 import datetime as dt
 from config.logging_config import setup_logger
 
-logger = setup_logger('main')
+# Initialize logger with Tinybird handler
+logger = setup_logger('main', send_callback=send_to_tinybird)
 
 now_time = dt.datetime.now().time()
 
