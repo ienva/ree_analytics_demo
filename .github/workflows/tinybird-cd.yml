@@ -13,7 +13,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  
+
 concurrency: ${{ github.workflow }}-${{ github.event.ref }}
 
 env:
@@ -49,20 +49,25 @@ jobs:
           cd tinybird
           tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
           
-      - name: Create Pull Request from staging to main
+      - name: Create PR from staging to main
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          # Check if a PR from staging to main already exists
+          git fetch origin main
+          if git rev-list origin/main..origin/staging --count | grep -q '^0$'; then
+            echo "🚫 No new commits to promote."
+            exit 0
+          fi
+
           existing_pr=$(gh pr list --base main --head staging --state open --json number --jq '.[0].number')
 
           if [ -z "$existing_pr" ]; then
-            echo "🔧 No existing PR found, creating a new one..."
+            echo "🔧 No PR found. Creating..."
             gh pr create \
               --base main \
               --head staging \
               --title "Deploy staging to main" \
-              --body "This PR includes the latest changes from staging to be deployed to production."
+              --body "This PR promotes the latest changes to production."
           else
             echo "✅ PR already exists: https://github.com/${{ github.repository }}/pull/$existing_pr"
           fi
