@@ -49,16 +49,15 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          head: staging
+          base: main           # Destination branch
+          head: staging        # Source branch (real branch in repo)
           title: 'Deploy changes from staging to main'
           body: |
             This PR contains the changes that were successfully deployed to staging.
             Please review and approve the changes to deploy to production.
           commit-message: 'chore: sync staging with main'
-          push-to-fork: ''  # Use same repo
-          branch: 'staging-to-main'
           delete-branch: false
+          push-to-fork: ''      # Use same repo
           create-when-empty: true
           labels: |
             deployment
