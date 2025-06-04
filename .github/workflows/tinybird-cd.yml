@@ -87,5 +87,14 @@ jobs:
       - name: Deploy to Tinybird Production
         run: |
           cd tinybird
-          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment promote
+
+          # Get the list of deployments and look for any with status "Staging"
+          STAGING_DEPLOYMENT=$(tb --cloud --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment ls | grep -i "Staging" || true)
+
+          if [ -z "$STAGING_DEPLOYMENT" ]; then
+            echo "✅ No staging deployment to promote."
+          else
+            echo "🚀 Staging deployment found. Promoting to production..."
+            tb --cloud --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" deployment promote
+          fi
           
