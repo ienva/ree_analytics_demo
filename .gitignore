@@ -1,0 +1,35 @@
+.*
+!.gitignore
+!.github/
+data/
+.DS_Store/
+data.json
+.idea/
+__pycache__/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
