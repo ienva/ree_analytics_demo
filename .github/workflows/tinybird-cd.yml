@@ -30,7 +30,7 @@ jobs:
       - name: Deploy to Tinybird Staging
         run: |
           cd tinybird
-          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} create deployment
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
           
       - name: Create Pull Request to Main
         uses: peter-evans/create-pull-request@v5
