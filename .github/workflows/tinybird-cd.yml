@@ -4,7 +4,15 @@ name: Tinybird - CD Workflow
 on:
   push:
     branches:
+      - staging
       - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
 
 concurrency: ${{ github.workflow }}-${{ github.event.ref }}
 
@@ -13,13 +21,88 @@ env:
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
 
 jobs:
-  cd:
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: staging
+      
+      - name: Fetch full git history
+        run: |
+          git fetch origin main
+          git fetch origin staging
+      
+      - name: Show diff between staging and main
+        run: |
+          echo "🔍 Commits in staging not in main:"
+          git log origin/main..origin/staging --oneline
+          
       - name: Install Tinybird CLI
-        run: curl https://tinybird.co | sh
-      - name: Going Tinybird Folder
-        run: cd tinybird/
-      - name: Deploy project
-        run: tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy
+        run: |
+          curl https://tinybird.co | sh
+          
+      - name: Deploy to Tinybird Staging
+        run: |
+          cd tinybird
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
+          
+      - name: Create PR from staging to main
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git fetch origin main
+          if git rev-list origin/main..origin/staging --count | grep -q '^0$'; then
+            echo "🚫 No new commits to promote."
+            exit 0
+          fi
+
+          existing_pr=$(gh pr list --base main --head staging --state open --json number --jq '.[0].number')
+
+          if [ -z "$existing_pr" ]; then
+            echo "🔧 No PR found. Creating..."
+            gh pr create \
+              --base main \
+              --head staging \
+              --title "Deploy staging to main" \
+              --body "This PR promotes the latest changes to production."
+          else
+            echo "✅ PR already exists: https://github.com/${{ github.repository }}/pull/$existing_pr"
+          fi
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+          
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          
+      - name: Deploy to Tinybird Production
+        run: |
+          cd tinybird
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment promote
+          
+  validate-pr:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          
+      - name: Validate Tinybird Configuration
+        run: |
+          cd tinybird
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} validate 

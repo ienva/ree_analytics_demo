@@ -2,6 +2,9 @@ from datetime import datetime, timedelta
 import pytz
 from fetcher import fetcher
 from sender.tinybird_sender import send_to_tinybird
+from config.logging_config import setup_logger
+
+logger = setup_logger('backfill')
 
 # Helper to get UTC datetimes for the last 24 hours
 now = datetime.now(pytz.timezone('UTC')).replace(second=0, microsecond=0)
@@ -30,18 +33,26 @@ def fetch_and_send(indicator_ids, datasource):
             processed = fetcher.processing_data(data)
             all_data.extend(processed)
     if all_data:
-        print(f"Sending {len(all_data)} records to Tinybird ({datasource})...")
+        logger.info(f"Sending {len(all_data)} records to Tinybird ({datasource})")
         send_to_tinybird(all_data, datasource)
     else:
-        print(f"No data to send for {datasource}")
+        logger.warning(f"No data to send for {datasource}")
 
 def main():
-    fetch_and_send(indicator_groups['peninsular_demand'], 'landing_ds')
-    fetch_and_send(indicator_groups['national_demand'], 'landing_ds')
-    fetch_and_send(indicator_groups['generation'], 'landing_ds')
-    fetch_and_send(indicator_groups['renewable_non_generation'], 'landing_ds')
-    fetch_and_send(indicator_groups['estimated_generation'], 'landing_ds')
-    fetch_and_send(indicator_groups['spot_costs'], 'landing_ds')
+    logger.info("Starting backfill process for the last 24 hours")
+    logger.info(f"Time range: {start_str} to {end_str}")
+    
+    try:
+        fetch_and_send(indicator_groups['peninsular_demand'], 'landing_ds')
+        fetch_and_send(indicator_groups['national_demand'], 'landing_ds')
+        fetch_and_send(indicator_groups['generation'], 'landing_ds')
+        fetch_and_send(indicator_groups['renewable_non_generation'], 'landing_ds')
+        fetch_and_send(indicator_groups['estimated_generation'], 'landing_ds')
+        fetch_and_send(indicator_groups['spot_costs'], 'landing_ds')
+        
+        logger.info("Backfill process completed successfully")
+    except Exception as e:
+        logger.error(f"Error during backfill process: {str(e)}", exc_info=True)
 
 if __name__ == "__main__":
     main() 
