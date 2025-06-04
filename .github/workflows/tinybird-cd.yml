@@ -59,6 +59,7 @@ jobs:
           push-to-fork: ''  # Use same repo
           branch: 'staging-to-main'
           delete-branch: false
+          create-when-empty: true
           labels: |
             deployment
             staging-to-main
