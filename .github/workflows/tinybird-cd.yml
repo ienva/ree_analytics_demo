@@ -4,6 +4,10 @@ name: Tinybird - CD Workflow
 on:
   push:
     branches:
+      - staging
+      - main
+  pull_request:
+    branches:
       - main
 
 concurrency: ${{ github.workflow }}-${{ github.event.ref }}
@@ -13,13 +17,65 @@ env:
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
 
 jobs:
-  cd:
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+          
       - name: Install Tinybird CLI
-        run: curl https://tinybird.co | sh
-      - name: Going Tinybird Folder
-        run: cd tinybird/
-      - name: Deploy project
-        run: tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy
+        run: |
+          curl https://tinybird.co | sh
+          
+      - name: Deploy to Tinybird Staging
+        run: |
+          cd tinybird
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} create deployment
+          
+      - name: Create Pull Request to Main
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          head: staging
+          title: 'Deploy changes from staging to main'
+          body: |
+            This PR contains the changes that were successfully deployed to staging.
+            Please review and approve the changes to deploy to production.
+          draft: false
+          delete-branch: false
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+          
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          
+      - name: Deploy to Tinybird Production
+        run: |
+          cd tinybird
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy
+          
+  validate-pr:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          
+      - name: Validate Tinybird Configuration
+        run: |
+          cd tinybird
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} validate 
