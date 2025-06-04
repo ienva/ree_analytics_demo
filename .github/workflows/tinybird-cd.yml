@@ -9,6 +9,8 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - closed
 
 permissions:
   contents: read
@@ -73,7 +75,7 @@ jobs:
           fi
 
   deploy-production:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -87,22 +89,3 @@ jobs:
           cd tinybird
           tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment promote
           
-  validate-pr:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          
-      - name: Install Tinybird CLI
-        run: |
-          curl https://tinybird.co | sh
-          
-      - name: Validate Tinybird Configuration
-        run: |
-          cd tinybird
-          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} validate 
