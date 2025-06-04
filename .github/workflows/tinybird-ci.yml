@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+      - staging
     types: [opened, reopened, labeled, unlabeled, synchronize]
 
 concurrency: ${{ github.workflow }}-${{ github.event.pull_request.number }}

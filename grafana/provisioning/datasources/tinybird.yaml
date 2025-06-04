@@ -1,0 +1,12 @@
+# provisioning/datasources/tinybird.yaml
+apiVersion: 1
+
+datasources:
+  - name: Tinybird-REE-Analysis
+    type: tinybird-tinybird-datasource
+    access: proxy
+    isDefault: true
+    secureJsonData:
+      host: "https://api.tinybird.co"
+      token: "${TINYBIRD_TOKEN}"
+

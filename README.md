@@ -1,6 +1,6 @@
 # REE API Demo
 
-This project demonstrates a complete data pipeline for collecting, processing, and analyzing real-time and historical energy data from the Spanish electricity system (REE/ESIOS API). The pipeline is designed for analytics, reporting, and dashboarding using Tinybird as the backend.
+This project demonstrates the integration between REE's API, Tinybird, and Grafana for real-time energy data monitoring and visualization.
 
 ## Overview
 - **Data is fetched** from the ESIOS (Red Eléctrica de España) API using a Python application.
@@ -9,15 +9,47 @@ This project demonstrates a complete data pipeline for collecting, processing, a
 
 ## Project Structure
 
-- [`ree_data_tracker/`](ree_data_tracker/README.md): Python code for fetching, processing, and sending data.
-  - Fetches data from ESIOS API.
-  - Processes and formats the data.
-  - Sends data to Tinybird.
-  - Includes unit tests and configuration.
-- [`tinybird/`](tinybird/README.md): Tinybird backend resources.
-  - Datasources: Raw and processed tables.
-  - Materializations: SQL nodes for filtering/aggregating data.
-  - Endpoints: API pipes for analytics and dashboards.
+```
+.
+├── ree_data_tracker/     # Data collection and processing
+├── tinybird/            # Tinybird data pipeline configuration
+└── grafana/             # Monitoring and visualization setup
+```
+
+## Components
+
+### REE Data Tracker
+The `ree_data_tracker` module is responsible for collecting real-time data from REE's API and sending it to Tinybird. It includes:
+- Real-time data collection
+- Data processing and transformation
+- Automated data sending to Tinybird
+- Comprehensive logging system
+
+### Tinybird
+The `tinybird` directory contains the data pipeline configuration for Tinybird, including:
+- Data source definitions
+- Data transformation nodes
+- API endpoints configuration
+
+### Grafana Monitoring
+The `grafana` directory contains a complete monitoring setup that includes:
+- Custom Grafana instance with Tinybird plugin integration
+- Pre-configured dashboards for data visualization
+- Automated dashboard export functionality
+- Persistent storage for Grafana data
+
+The Grafana setup is specifically configured to work with the Tinybird plugin, allowing you to:
+- Monitor real-time energy data
+- Track data collection metrics
+- Visualize system logs
+- Monitor data pipeline health
+
+To access the Grafana dashboard:
+1. Start the Grafana container using the provided scripts
+2. Access the dashboard at `http://localhost:3000`
+3. Use the default credentials (admin/admin) for first login
+
+For detailed Grafana setup instructions, refer to the [Grafana README](grafana/README.md).
 
 ## How It Works
 1. **Python app** (`ree_data_tracker/`) fetches and processes energy data from ESIOS.

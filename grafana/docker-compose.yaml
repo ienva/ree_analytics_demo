@@ -1,0 +1,33 @@
+services:
+  grafana:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: grafana-with-tinybird
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=tinybird-tinybird-datasource
+      - TINYBIRD_TOKEN=${TINYBIRD_TOKEN}
+      - GF_PATHS_PLUGINS=/usr/share/grafana/plugins
+    volumes:
+      - ./dashboards:/etc/grafana/dashboards
+      - ./provisioning:/etc/grafana/provisioning
+      - ./grafana-storage:/var/lib/grafana
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  dashboard-exporter:
+    image: curlimages/curl:latest  # Lightweight image with curl
+    container_name: grafana_exporter
+    volumes:
+      - ./dashboards:/dashboards
+      - ./export_dashboard.sh:/export.sh
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["while true; do sh /export.sh; sleep 3600; done"]
