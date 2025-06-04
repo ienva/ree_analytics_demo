@@ -42,8 +42,12 @@ jobs:
           body: |
             This PR contains the changes that were successfully deployed to staging.
             Please review and approve the changes to deploy to production.
-          draft: false
+          commit-message: 'chore: sync staging with main'
+          branch: 'sync-staging-to-main'
           delete-branch: false
+          labels: |
+            deployment
+            staging-to-main
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
