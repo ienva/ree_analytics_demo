@@ -62,9 +62,6 @@ jobs:
           else
             echo "✅ PR already exists: https://github.com/${{ github.repository }}/pull/$existing_pr"
           fi
-        permissions:
-          pull-requests: write
-          contents: read
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
