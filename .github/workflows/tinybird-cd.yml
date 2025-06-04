@@ -25,6 +25,15 @@ jobs:
         with:
           fetch-depth: 0
           ref: staging
+      
+      - name: Debug Git Info
+        run: |
+          echo "🔍 Current branch and latest commits:"
+          git branch --show-current
+          git log --oneline -n 5
+          echo "🔍 Changes from main to staging:"
+          git fetch origin
+          git log origin/main..origin/staging --oneline
           
       - name: Install Tinybird CLI
         run: |
@@ -46,9 +55,9 @@ jobs:
             This PR contains the changes that were successfully deployed to staging.
             Please review and approve the changes to deploy to production.
           commit-message: 'chore: sync staging with main'
-          push-to-fork: ''  # Empty string to use the same repository
+          push-to-fork: ''  # Use same repo
           branch: 'staging-to-main'
-          delete-branch: false  # Keep the branch for future updates
+          delete-branch: false
           labels: |
             deployment
             staging-to-main
