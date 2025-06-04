@@ -26,13 +26,14 @@ jobs:
           fetch-depth: 0
           ref: staging
       
-      - name: Debug Git Info
+      - name: Fetch full git history
         run: |
-          echo "🔍 Current branch and latest commits:"
-          git branch --show-current
-          git log --oneline -n 5
-          echo "🔍 Changes from main to staging:"
-          git fetch origin
+          git fetch origin main
+          git fetch origin staging
+      
+      - name: Show diff between staging and main
+        run: |
+          echo "🔍 Commits in staging not in main:"
           git log origin/main..origin/staging --oneline
           
       - name: Install Tinybird CLI
