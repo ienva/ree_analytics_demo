@@ -58,7 +58,7 @@ jobs:
       - name: Deploy to Tinybird Production
         run: |
           cd tinybird
-          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment promote
           
   validate-pr:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
