@@ -45,23 +45,26 @@ jobs:
           cd tinybird
           tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
           
-      - name: Create Pull Request to Main
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main           # Destination branch
-          head: staging        # Source branch (real branch in repo)
-          title: 'Deploy changes from staging to main'
-          body: |
-            This PR contains the changes that were successfully deployed to staging.
-            Please review and approve the changes to deploy to production.
-          commit-message: 'chore: sync staging with main'
-          delete-branch: false
-          push-to-fork: ''      # Use same repo
-          create-when-empty: true
-          labels: |
-            deployment
-            staging-to-main
+      - name: Create Pull Request from staging to main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if a PR from staging to main already exists
+          existing_pr=$(gh pr list --base main --head staging --state open --json number --jq '.[0].number')
+
+          if [ -z "$existing_pr" ]; then
+            echo "🔧 No existing PR found, creating a new one..."
+            gh pr create \
+              --base main \
+              --head staging \
+              --title "Deploy staging to main" \
+              --body "This PR includes the latest changes from staging to be deployed to production."
+          else
+            echo "✅ PR already exists: https://github.com/${{ github.repository }}/pull/$existing_pr"
+          fi
+        permissions:
+          pull-requests: write
+          contents: read
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
