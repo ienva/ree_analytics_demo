@@ -1,8 +1,8 @@
 SCHEMA >
-    `log_datetime` DateTime,
-    `log_level` String,
-    `log_message` String,
-    `module_name` String
+    `log_datetime` DateTime `json:$.log_datetime`,
+    `log_level` String `json:$.log_level`,
+    `log_message` String `json:$.log_message`,
+    `module_name` String `json:$.module_name`
 
 ENGINE "MergeTree"
-ENGINE_SORTING_KEY "log_level,log_datetime" 
+ENGINE_SORTING_KEY "log_level,log_datetime"

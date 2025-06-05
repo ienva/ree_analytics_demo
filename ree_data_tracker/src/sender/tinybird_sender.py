@@ -24,10 +24,15 @@ def send_to_tinybird(payload, datasource, retries=3, delay=2):
                 headers=headers,
                 data="\n".join(json.dumps(record) for record in payload)
             )
-            response.raise_for_status()
+            
+            if response.status_code != 200:
+                logger.error(f"Tinybird API error: {response.status_code} - {response.text}")
+                response.raise_for_status()
+                
             response_data = response.json()
             logger.info(f"Successfully sent {len(payload)} records to Tinybird {datasource}: {response_data}")
             return True
+            
         except requests.exceptions.RequestException as e:
             logger.error(f"Attempt {attempt+1} to send to Tinybird failed: {str(e)}")
             if attempt < retries - 1:

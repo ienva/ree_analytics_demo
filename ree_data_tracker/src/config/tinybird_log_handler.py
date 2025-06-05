@@ -14,11 +14,11 @@ class TinybirdLogHandler(logging.Handler):
 
     def emit(self, record):
         try:
-            # Create log entry
+            # Create log entry with proper format for Tinybird
             log_entry = {
                 'log_datetime': datetime.fromtimestamp(record.created, tz=pytz.UTC).strftime('%Y-%m-%d %H:%M:%S'),
                 'log_level': record.levelname,
-                'log_message': self.format(record),
+                'log_message': str(record.getMessage()),  # Ensure message is a string
                 'module_name': record.name
             }
             
@@ -40,8 +40,19 @@ class TinybirdLogHandler(logging.Handler):
             return
             
         try:
+            # Ensure all required fields are present and properly formatted
+            formatted_buffer = []
+            for entry in self.buffer:
+                formatted_entry = {
+                    'log_datetime': entry['log_datetime'],
+                    'log_level': str(entry['log_level']),
+                    'log_message': str(entry['log_message']),
+                    'module_name': str(entry['module_name'])
+                }
+                formatted_buffer.append(formatted_entry)
+            
             # Send logs using the callback
-            self.send_callback(self.buffer, 'tracker_logs')
+            self.send_callback(formatted_buffer, 'tracker_logs')
             
             # Clear buffer and update last send time
             self.buffer = []
