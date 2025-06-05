@@ -12,7 +12,7 @@ SQL >
         day,
         concat(lpad(toString(best_hour), 2, '0'), ':00') best_hour,
         concat(lpad(toString(worst_hour), 2, '0'), ':00') worst_hour
-    FROM daily_spot_analysis_mv
+    FROM daily_spot_analysis_mv FINAL
     WHERE day = toDate(toTimezone(now(), 'Europe/Madrid'))
     ORDER BY geo_name
 
