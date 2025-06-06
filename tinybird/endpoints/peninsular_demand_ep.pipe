@@ -7,6 +7,6 @@ SQL >
         toTimezone(datetime, 'Europe/Madrid') datetime,
         metric_name,
         value
-    FROM  peninsular_demand_mv
+    FROM  peninsular_demand_mv FINAL
 
 TYPE ENDPOINT

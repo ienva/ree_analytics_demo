@@ -7,7 +7,7 @@ SQL >
         max(toTimezone(datetime, 'Europe/Madrid')) max_datetime,
         metric_name,
         argMax(value, datetime) last_value
-    FROM generation_mv
+    FROM generation_mv FINAL
     GROUP BY metric_name
 
 NODE all_generation

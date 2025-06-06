@@ -7,6 +7,6 @@ SQL >
         toTimezone(datetime, 'Europe/Madrid') datetime,
         geo_name,
         value
-    FROM daily_spot_mv
+    FROM daily_spot_mv FINAL
 
 TYPE ENDPOINT
