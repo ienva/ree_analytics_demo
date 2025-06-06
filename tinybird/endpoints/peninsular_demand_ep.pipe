@@ -3,6 +3,7 @@ DESCRIPTION >
     Generation timeseries
 
 SQL >
+    %
     SELECT
         toTimezone(datetime, 'Europe/Madrid') datetime,
         metric_name,
