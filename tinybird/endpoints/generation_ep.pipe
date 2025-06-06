@@ -8,5 +8,12 @@ SQL >
         metric_name,
         value
     FROM generation_mv FINAL
+    WHERE 1=1
+        {% if defined(start_datetime) %}
+        AND toTimezone(datetime, 'Europe/Madrid') >= {{DateTime(start_datetime)}}
+        {% end %}
+        {% if defined(end_datetime) %}
+        AND toTimezone(datetime, 'Europe/Madrid') <= {{DateTime(end_datetime)}}
+        {% end %}
 
 TYPE ENDPOINT
