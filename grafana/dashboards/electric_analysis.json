@@ -555,7 +555,7 @@
             "root_selector": "",
             "source": "url",
             "type": "json",
-            "url": "https://api.tinybird.co/v0/pipes/estimated_generation.json",
+            "url": "https://api.tinybird.co/v0/pipes/estimated_generation_ep.json",
             "url_options": {
               "data": "",
               "method": "GET",
