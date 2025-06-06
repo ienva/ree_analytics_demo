@@ -5,8 +5,24 @@ datasources:
   - name: Tinybird-REE-Analysis
     type: tinybird-tinybird-datasource
     access: proxy
-    isDefault: true
+    isDefault: false
     secureJsonData:
       host: "https://api.tinybird.co"
       token: "${TINYBIRD_TOKEN}"
 
+  - name: Tinybird Electric Grid Datasources
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    isDefault: false
+
+    jsonData:
+      auth_method: bearerToken
+      allowedHosts:
+        - https://api.tinybird.co
+      customHealthCheckEnabled: true
+      customHealthCheckUrl: https://api.tinybird.co/v0/pipes/generation_ep.json
+      oauthPassThru: false
+
+    secureJsonData:
+      # authenticationMethod: bearerToken
+      bearerToken: ${TINYBIRD_TOKEN}

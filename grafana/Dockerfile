@@ -14,3 +14,4 @@ RUN mkdir -p /usr/share/grafana/plugins/tinybird-tinybird-datasource && \
 
 RUN chmod -R 755 /var/lib/grafana/plugins
 
+

@@ -23,8 +23,8 @@
     "panels": [
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -100,17 +100,53 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
-            "dataKeys": "value",
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "geo_name",
+                "text": "Country",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
             "format": "timeseries",
-            "labelKeys": "geo_name",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "daily_spot_prices",
+            "global_query_id": "",
+            "parser": "simple",
             "refId": "A",
-            "timeKey": "datetime"
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/daily_spot_prices.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "params": [
+                {
+                  "key": "start_datetime",
+                  "value": "$__from"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "$__to"
+                }
+              ]
+            }
           }
         ],
         "title": "Daily Spot Prices",
@@ -118,8 +154,8 @@
       },
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -269,13 +305,27 @@
             {
               "matcher": {
                 "id": "byName",
-                "options": "day"
+                "options": "worst_hour"
               },
               "properties": [
                 {
                   "id": "color",
                   "value": {
-                    "fixedColor": "#cbc4c4",
+                    "fixedColor": "#c9c8c8",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Country"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
                     "mode": "fixed"
                   }
                 }
@@ -290,7 +340,7 @@
                 {
                   "id": "color",
                   "value": {
-                    "fixedColor": "#cbc9c9",
+                    "fixedColor": "#e3e3e3",
                     "mode": "fixed"
                   }
                 }
@@ -299,13 +349,13 @@
             {
               "matcher": {
                 "id": "byName",
-                "options": "worst_hour"
+                "options": "datetime"
               },
               "properties": [
                 {
                   "id": "color",
                   "value": {
-                    "fixedColor": "#c9c8c8",
+                    "fixedColor": "#6e6d6d",
                     "mode": "fixed"
                   }
                 }
@@ -332,14 +382,63 @@
           },
           "showHeader": true
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
+            "columns": [
+              {
+                "selector": "geo_name",
+                "text": "Country",
+                "type": "string"
+              },
+              {
+                "selector": "day",
+                "text": "datetime",
+                "type": "string"
+              },
+              {
+                "selector": "avg_price",
+                "text": "avg_price",
+                "type": "number"
+              },
+              {
+                "selector": "best_hour",
+                "text": "best_hour",
+                "type": "number"
+              },
+              {
+                "selector": "min_price",
+                "text": "min_price",
+                "type": "number"
+              },
+              {
+                "selector": "worst_hour",
+                "text": "worst_hour",
+                "type": "number"
+              },
+              {
+                "selector": "max_price",
+                "text": "max_price",
+                "type": "string"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
             "format": "table",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "daily_spot_analysis_ep",
-            "refId": "A"
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/daily_spot_analysis_ep.json",
+            "url_options": {
+              "data": "",
+              "method": "GET"
+            }
           }
         ],
         "title": "Spot Daily Prices",
@@ -347,8 +446,8 @@
       },
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -424,17 +523,53 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
-            "dataKeys": "value",
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
             "format": "timeseries",
-            "labelKeys": "metric_name",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "estimated_generacion",
+            "global_query_id": "",
+            "parser": "simple",
             "refId": "A",
-            "timeKey": "datetime"
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/estimated_generation_ep.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "params": [
+                {
+                  "key": "start_datetime",
+                  "value": "$__from"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "$__to"
+                }
+              ]
+            }
           }
         ],
         "title": "Generación Solar Estimada",
@@ -442,8 +577,8 @@
       },
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -518,7 +653,7 @@
         "options": {
           "legend": {
             "calcs": [],
-            "displayMode": "table",
+            "displayMode": "list",
             "placement": "right",
             "showLegend": true
           },
@@ -528,21 +663,53 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
-            "dataKeys": "value",
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
             "datasource": {
-              "type": "tinybird-tinybird-datasource",
-              "uid": "Tinybird-REE-Analysis"
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
             },
+            "filters": [],
             "format": "timeseries",
-            "labelKeys": "metric_name",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "generation_ep",
+            "global_query_id": "",
+            "parser": "simple",
             "refId": "A",
-            "timeKey": "datetime"
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/generation_ep.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "params": [
+                {
+                  "key": "start_datetime",
+                  "value": "$__from"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "$__to"
+                }
+              ]
+            }
           }
         ],
         "title": "Spanish National Electric Generation by Technology",
@@ -550,8 +717,8 @@
       },
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -629,17 +796,53 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
-            "dataKeys": "value",
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
             "format": "timeseries",
-            "labelKeys": "metric_name",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "national_demand_ep",
+            "global_query_id": "",
+            "parser": "simple",
             "refId": "A",
-            "timeKey": "datetime"
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/national_demand_ep.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "params": [
+                {
+                  "key": "start_datetime",
+                  "value": "$__from"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "$__to"
+                }
+              ]
+            }
           }
         ],
         "title": "Spanish National Electric Demand",
@@ -647,8 +850,8 @@
       },
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -679,9 +882,11 @@
             "percent"
           ],
           "legend": {
-            "displayMode": "list",
+            "calcs": [],
+            "displayMode": "hidden",
             "placement": "right",
-            "showLegend": true
+            "showLegend": false,
+            "values": []
           },
           "pieType": "donut",
           "reduceOptions": {
@@ -689,7 +894,7 @@
               "lastNotNull"
             ],
             "fields": "",
-            "values": false
+            "values": true
           },
           "tooltip": {
             "hideZeros": false,
@@ -697,17 +902,38 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
-            "dataKeys": "gen_perc",
-            "format": "timeseries",
-            "labelKeys": "metric_name",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "generation_by_technology_perc",
+            "columns": [
+              {
+                "selector": "gen_perc",
+                "text": "gen_perc",
+                "type": "number"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "table",
+            "global_query_id": "",
+            "parser": "simple",
             "refId": "A",
-            "timeKey": "datetime"
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/generation_by_technology_perc.json",
+            "url_options": {
+              "data": "",
+              "method": "GET"
+            }
           }
         ],
         "title": "Spanish Mix Generation Percentages",
@@ -715,8 +941,8 @@
       },
       {
         "datasource": {
-          "type": "tinybird-tinybird-datasource",
-          "uid": "Tinybird-REE-Analysis"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
         "fieldConfig": {
           "defaults": {
@@ -746,9 +972,11 @@
             "percent"
           ],
           "legend": {
-            "displayMode": "list",
+            "calcs": [],
+            "displayMode": "hidden",
             "placement": "right",
-            "showLegend": true
+            "showLegend": false,
+            "values": []
           },
           "pieType": "pie",
           "reduceOptions": {
@@ -756,7 +984,7 @@
               "lastNotNull"
             ],
             "fields": "",
-            "values": false
+            "values": true
           },
           "tooltip": {
             "hideZeros": false,
@@ -764,17 +992,38 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "12.0.0",
+        "pluginVersion": "12.0.1",
         "targets": [
           {
-            "dataKeys": "gen_perc",
-            "format": "timeseries",
-            "labelKeys": "metric_name",
-            "paramOptions": {},
-            "params": {},
-            "pipeName": "renewable_energy_perc",
+            "columns": [
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "gen_perc",
+                "text": "gen_perc",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "table",
+            "global_query_id": "",
+            "parser": "simple",
             "refId": "A",
-            "timeKey": "datetime"
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/renewable_energy_perc.json",
+            "url_options": {
+              "data": "",
+              "method": "GET"
+            }
           }
         ],
         "title": "Renewable VS Non-Renewable Spanish Generation",
@@ -796,5 +1045,5 @@
     "timezone": "browser",
     "title": "Prod - Electric System",
     "uid": "1c08fedd-09c5-406a-b199-516aef82bfed",
-    "version": 12
+    "version": 5
   }
