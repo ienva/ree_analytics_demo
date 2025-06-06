@@ -1,14 +1,14 @@
-NODE spot_node
+NODE estimated_generation_node
 DESCRIPTION >
-    Spot Prices timeseries
+    Generation timeseries
 
 SQL >
     %
     SELECT
         toTimezone(datetime, 'Europe/Madrid') datetime,
-        geo_name,
+        metric_name,
         value
-    FROM daily_spot_mv FINAL
+    FROM estimated_generation_mv FINAL
     WHERE 1=1
         {% if defined(start_datetime) %}
         AND toTimezone(datetime, 'Europe/Madrid') >= {{DateTime(start_datetime)}}
@@ -16,6 +16,5 @@ SQL >
         {% if defined(end_datetime) %}
         AND toTimezone(datetime, 'Europe/Madrid') <= {{DateTime(end_datetime)}}
         {% end %}
-
 
 TYPE ENDPOINT

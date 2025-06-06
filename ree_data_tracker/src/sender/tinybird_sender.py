@@ -25,7 +25,7 @@ def send_to_tinybird(payload, datasource, retries=3, delay=2):
                 data="\n".join(json.dumps(record) for record in payload)
             )
             
-            if response.status_code != 200:
+            if response.status_code not in [200, 202]:
                 logger.error(f"Tinybird API error: {response.status_code} - {response.text}")
                 response.raise_for_status()
                 

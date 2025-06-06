@@ -3,10 +3,18 @@ DESCRIPTION >
     Generation timeseries
 
 SQL >
+    %
     SELECT
         toTimezone(datetime, 'Europe/Madrid') datetime,
         metric_name,
         value
-    FROM  peninsular_demand_mv
+    FROM  peninsular_demand_mv FINAL
+    WHERE 1=1
+        {% if defined(start_datetime) %}
+        AND toTimezone(datetime, 'Europe/Madrid') >= {{DateTime(start_datetime)}}
+        {% end %}
+        {% if defined(end_datetime) %}
+        AND toTimezone(datetime, 'Europe/Madrid') <= {{DateTime(end_datetime)}}
+        {% end %}
 
 TYPE ENDPOINT
