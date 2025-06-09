@@ -135,17 +135,18 @@
             "url": "https://api.tinybird.co/v0/pipes/daily_spot_prices.json",
             "url_options": {
               "data": "",
-              "method": "GET",
-              "params": [
+              "headers": [
                 {
                   "key": "start_datetime",
-                  "value": "$__from"
+                  "value": "${__from:date:iso}"
                 },
                 {
                   "key": "end_datetime",
-                  "value": "$__to"
+                  "value": "${__to:date:iso}"
                 }
-              ]
+              ],
+              "method": "GET",
+              "params": []
             }
           }
         ],
@@ -558,17 +559,18 @@
             "url": "https://api.tinybird.co/v0/pipes/estimated_generation_ep.json",
             "url_options": {
               "data": "",
-              "method": "GET",
-              "params": [
+              "headers": [
                 {
                   "key": "start_datetime",
-                  "value": "$__from"
+                  "value": "${__from:date:iso}"
                 },
                 {
                   "key": "end_datetime",
-                  "value": "$__to"
+                  "value": "${__to:date:iso}"
                 }
-              ]
+              ],
+              "method": "GET",
+              "params": []
             }
           }
         ],
@@ -698,17 +700,18 @@
             "url": "https://api.tinybird.co/v0/pipes/generation_ep.json",
             "url_options": {
               "data": "",
-              "method": "GET",
-              "params": [
+              "headers": [
                 {
                   "key": "start_datetime",
-                  "value": "$__from"
+                  "value": "${__from:date:iso}"
                 },
                 {
                   "key": "end_datetime",
-                  "value": "$__to"
+                  "value": "${__to:date:iso}"
                 }
-              ]
+              ],
+              "method": "GET",
+              "params": []
             }
           }
         ],
@@ -831,17 +834,18 @@
             "url": "https://api.tinybird.co/v0/pipes/national_demand_ep.json",
             "url_options": {
               "data": "",
-              "method": "GET",
-              "params": [
+              "headers": [
                 {
                   "key": "start_datetime",
-                  "value": "$__from"
+                  "value": "${__from:date:iso}"
                 },
                 {
                   "key": "end_datetime",
-                  "value": "$__to"
+                  "value": "${__to:date:iso}"
                 }
-              ]
+              ],
+              "method": "GET",
+              "params": []
             }
           }
         ],
@@ -1031,7 +1035,7 @@
       }
     ],
     "preload": false,
-    "refresh": "5m",
+    "refresh": "1d",
     "schemaVersion": 41,
     "tags": [],
     "templating": {
@@ -1045,5 +1049,5 @@
     "timezone": "browser",
     "title": "Prod - Electric System",
     "uid": "1c08fedd-09c5-406a-b199-516aef82bfed",
-    "version": 5
+    "version": 8
   }
