@@ -16,5 +16,6 @@ SQL >
         {% if defined(end_datetime) %}
         AND toTimezone(datetime, 'Europe/Madrid') <= {{DateTime(end_datetime)}}
         {% end %}
+    ORDER BY datetime DESC
 
 TYPE ENDPOINT
