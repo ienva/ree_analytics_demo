@@ -1,0 +1,5 @@
+
+- name: national_demand_last_week
+  description: Test the national demand for the last week
+  parameters: start_datetime=2023-06-01T00:00:00&end_datetime=2023-06-11T00:00:00
+  expected_result: ''

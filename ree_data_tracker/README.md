@@ -33,6 +33,8 @@ credentials:
   ree_api: "<your_esios_api_token>"
 ```
 
+To obtain the ree_api key you need to write a messages to REE telling them why you need it and providing your name and last name.
+
 ## How to Run
 
 1. **Set up your tokens** in `.connections.yaml` as above.

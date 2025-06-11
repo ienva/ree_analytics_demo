@@ -1,0 +1,45 @@
+
+- name: default_no_parameters
+  description: Test the endpoint with no date parameters to see all available data
+  parameters: ''
+  expected_result: |
+    {"datetime":"2025-06-09 17:58:22","metric_name":"Frequency","value":177549964}
+    {"datetime":"2025-06-10 06:10:41","metric_name":"Voltage","value":2155374986}
+    {"datetime":"2025-06-10 14:54:41","metric_name":"Voltage","value":1436321906}
+    {"datetime":"2025-06-10 16:15:31","metric_name":"Voltage","value":3029015206}
+    {"datetime":"2025-06-10 04:59:30","metric_name":"Power Factor","value":583763028}
+    {"datetime":"2025-06-10 13:24:00","metric_name":"Power Factor","value":1093924188}
+    {"datetime":"2025-06-10 00:31:49","metric_name":"Demand","value":1666716550}
+    {"datetime":"2025-06-10 08:36:49","metric_name":"Demand","value":2865400750}
+    {"datetime":"2025-06-10 00:06:27","metric_name":"Frequency","value":1554916194}
+    {"datetime":"2025-06-09 22:41:36","metric_name":"Voltage","value":374697876}
+
+- name: last_24_hours
+  description: Test with the last 24 hours of data
+  parameters: start_datetime=2023-05-01T00:00:00&end_datetime=2023-05-01T23:59:59
+  expected_result: ''
+
+- name: specific_week
+  description: Test with a specific week of data
+  parameters: start_datetime=2023-04-24T00:00:00&end_datetime=2023-04-30T23:59:59
+  expected_result: ''
+
+- name: only_start_date
+  description: Test with only start date specified
+  parameters: start_datetime=2023-05-01T00:00:00
+  expected_result: |
+    {"datetime":"2025-06-09 17:58:22","metric_name":"Frequency","value":177549964}
+    {"datetime":"2025-06-10 06:10:41","metric_name":"Voltage","value":2155374986}
+    {"datetime":"2025-06-10 14:54:41","metric_name":"Voltage","value":1436321906}
+    {"datetime":"2025-06-10 16:15:31","metric_name":"Voltage","value":3029015206}
+    {"datetime":"2025-06-10 04:59:30","metric_name":"Power Factor","value":583763028}
+    {"datetime":"2025-06-10 13:24:00","metric_name":"Power Factor","value":1093924188}
+    {"datetime":"2025-06-10 00:31:49","metric_name":"Demand","value":1666716550}
+    {"datetime":"2025-06-10 08:36:49","metric_name":"Demand","value":2865400750}
+    {"datetime":"2025-06-10 00:06:27","metric_name":"Frequency","value":1554916194}
+    {"datetime":"2025-06-09 22:41:36","metric_name":"Voltage","value":374697876}
+
+- name: only_end_date
+  description: Test with only end date specified
+  parameters: end_datetime=2023-05-01T23:59:59
+  expected_result: ''
