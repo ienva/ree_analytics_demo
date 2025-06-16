@@ -1,0 +1,15 @@
+
+- name: renewable_energy_percentage_test
+  description: Test the renewable energy percentage calculation with default parameters
+  parameters: ''
+  expected_result: |
+    {"datetime":"2025-06-09 23:10:16","metric_name":"1521271170000","gen_perc":null}
+    {"datetime":"2025-06-10 02:10:16","metric_name":"3152134527000","gen_perc":null}
+    {"datetime":"2025-06-09 19:10:16","metric_name":"2610098086000","gen_perc":null}
+    {"datetime":"2025-06-10 08:10:16","metric_name":"2551519641000","gen_perc":null}
+    {"datetime":"2025-06-09 16:10:16","metric_name":"2017810633000","gen_perc":null}
+    {"datetime":"2025-06-10 07:10:16","metric_name":"2050630282000","gen_perc":null}
+    {"datetime":"2025-06-09 18:10:16","metric_name":"1623601607000","gen_perc":null}
+    {"datetime":"2025-06-10 13:10:16","metric_name":"4030198612000","gen_perc":null}
+    {"datetime":"2025-06-09 11:10:16","metric_name":"858912270000","gen_perc":null}
+    {"datetime":"2025-06-10 03:10:16","metric_name":"927055310000","gen_perc":null}

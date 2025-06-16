@@ -1,0 +1,11 @@
+
+- name: generation_by_technology_perc_default
+  description: Test the generation percentage by technology with default parameters
+  parameters: ''
+  expected_result: |
+    {"datetime":"2025-05-31 17:10:45","metric_name":"Biomass","gen_perc":1}
+    {"datetime":"2025-06-06 17:10:45","metric_name":"Nuclear","gen_perc":1}
+    {"datetime":"2025-06-08 17:10:45","metric_name":"Coal","gen_perc":1}
+    {"datetime":"2025-05-12 17:10:45","metric_name":"Natural Gas","gen_perc":1}
+    {"datetime":"2025-06-07 17:10:45","metric_name":"Hydroelectric","gen_perc":1}
+    {"datetime":"2025-05-14 17:10:45","metric_name":"Geothermal","gen_perc":1}

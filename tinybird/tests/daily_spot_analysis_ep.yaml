@@ -1,0 +1,5 @@
+
+- name: today_spot_analysis_test
+  description: Test today's daily spot price analysis for Europe/Madrid timezone
+  parameters: ''
+  expected_result: ''
