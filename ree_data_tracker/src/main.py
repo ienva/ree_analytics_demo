@@ -7,10 +7,9 @@ from config.logging_config import setup_logger
 # Initialize logger with Tinybird handler
 logger = setup_logger('main', send_callback=send_to_tinybird)
 
-now_time = dt.datetime.now().time()
-
 while True:
     try:
+        now_time = dt.datetime.now().time()
         logger.info("Starting data collection cycle")
         
         data_demand = get_rt_demand_peninsular()
