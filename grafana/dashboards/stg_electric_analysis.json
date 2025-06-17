@@ -1,178 +1,178 @@
 {
-    "annotations": {
-      "list": [
-        {
-          "builtIn": 1,
-          "datasource": {
-            "type": "grafana",
-            "uid": "-- Grafana --"
-          },
-          "enable": true,
-          "hide": true,
-          "iconColor": "rgba(0, 211, 255, 1)",
-          "name": "Annotations & Alerts",
-          "type": "dashboard"
-        }
-      ]
-    },
-    "editable": true,
-    "fiscalYearStartMonth": 0,
-    "graphTooltip": 0,
-    "id": 1,
-    "links": [],
-    "panels": [
+  "annotations": {
+    "list": [
       {
+        "builtIn": 1,
         "datasource": {
-          "type": "yesoreyeram-infinity-datasource",
-          "uid": "Tinybird Electric Grid Datasources"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "Tinybird Electric Grid Datasources"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 0,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
             },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
           },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 14,
-          "w": 24,
-          "x": 0,
-          "y": 0
-        },
-        "id": 6,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "right",
-            "showLegend": true
-          },
-          "tooltip": {
-            "hideZeros": false,
-            "mode": "single",
-            "sort": "none"
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           }
         },
-        "pluginVersion": "12.0.1",
-        "targets": [
-          {
-            "columns": [
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "columns": [
+            {
+              "selector": "datetime",
+              "text": "datetime",
+              "type": "timestamp"
+            },
+            {
+              "selector": "geo_name",
+              "text": "Country",
+              "type": "string"
+            },
+            {
+              "selector": "value",
+              "text": "value",
+              "type": "number"
+            }
+          ],
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "Tinybird Electric Grid Datasources"
+          },
+          "filters": [],
+          "format": "timeseries",
+          "global_query_id": "",
+          "parser": "simple",
+          "refId": "A",
+          "root_selector": "",
+          "source": "url",
+          "type": "json",
+          "url": "https://api.tinybird.co/v0/pipes/daily_spot_prices.json",
+          "url_options": {
+            "data": "",
+            "headers": [
               {
-                "selector": "datetime",
-                "text": "datetime",
-                "type": "timestamp"
+                "key": "start_datetime",
+                "value": "${__from:date:iso}"
               },
               {
-                "selector": "geo_name",
-                "text": "Country",
-                "type": "string"
+                "key": "end_datetime",
+                "value": "${__to:date:iso}"
               },
               {
-                "selector": "value",
-                "text": "value",
-                "type": "number"
+                "key": "__tb__deployment",
+                "value": "45"
               }
             ],
-            "datasource": {
-              "type": "yesoreyeram-infinity-datasource",
-              "uid": "Tinybird Electric Grid Datasources"
-            },
-            "filters": [],
-            "format": "timeseries",
-            "global_query_id": "",
-            "parser": "simple",
-            "refId": "A",
-            "root_selector": "",
-            "source": "url",
-            "type": "json",
-            "url": "https://api.tinybird.co/v0/pipes/daily_spot_prices.json",
-            "url_options": {
-              "data": "",
-              "headers": [
-                {
-                  "key": "start_datetime",
-                  "value": "${__from:date:iso}"
-                },
-                {
-                  "key": "end_datetime",
-                  "value": "${__to:date:iso}"
-                },
-                {
-                  "key": "__tb__deployment",
-                  "value": "43"
-                }
-              ],
-              "method": "GET",
-              "params": []
-            }
+            "method": "GET",
+            "params": []
           }
-        ],
-        "title": "Daily Spot Prices",
-        "type": "timeseries"
-      }
-    ],
-    "refresh": "5s",
-    "schemaVersion": 38,
-    "style": "dark",
-    "tags": [],
-    "templating": {
-      "list": []
-    },
-    "time": {
-      "from": "now-6h",
-      "to": "now"
-    },
-    "timepicker": {},
-    "timezone": "",
-    "title": "Electric Grid Analysis",
-    "uid": "electric-grid-analysis",
-    "version": 1,
-    "weekStart": ""
-} 
+        }
+      ],
+      "title": "Daily Spot Prices",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Electric Grid Analysis",
+  "uid": "electric-grid-analysis",
+  "version": 1,
+  "weekStart": ""
+}
