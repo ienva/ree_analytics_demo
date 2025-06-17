@@ -4,7 +4,16 @@ providers:
   - name: 'Prod - Electric System'
     type: file
     disableDeletion: false
-    updateIntervalSeconds: 10
+    updateIntervalSeconds: 300
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false
+
+  - name: 'STG - Electric System'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 300
     allowUiUpdates: true
     options:
       path: /etc/grafana/dashboards
