@@ -59,12 +59,12 @@ jobs:
           echo "📌 DEPLOYMENT_ID=$DEPLOYMENT_ID"
 
           echo "🔄 Updating dashboard JSON with deployment ID..."
-          jq --arg id "$DEPLOYMENT_ID" '(.panels[].targets[].url_options.headers[] | select(.key == "__tb__deployment").value) = $id' \
+          jq --arg id "$DEPLOYMENT_ID" '(.panels[].targets[].url_options.headers += [{"key": "__tb__deployment", "value": $id}])' \
             grafana/dashboards/stg_electric_analysis.json > grafana/dashboards/stg_electric_analysis.json.tmp && \
             mv grafana/dashboards/stg_electric_analysis.json.tmp grafana/dashboards/stg_electric_analysis.json
 
           echo "✅ Dashboard JSON updated successfully"
-
+          
           echo "📝 Committing and pushing changes..."
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
