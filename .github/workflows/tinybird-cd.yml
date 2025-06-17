@@ -1,4 +1,3 @@
-
 name: Tinybird - CD Workflow
 
 on:
@@ -58,19 +57,12 @@ jobs:
 
           echo "📌 DEPLOYMENT_ID=$DEPLOYMENT_ID"
 
-          echo "🔍 Verifying placeholder exists..."
-          grep '{{DEPLOYMENT_ID}}' grafana/dashboards/stg_electric_analysis.template.json || {
-            echo "❌ Placeholder not found in template. Aborting."
-            exit 1
-          }
+          echo "🔄 Updating dashboard JSON with deployment ID..."
+          jq --arg id "$DEPLOYMENT_ID" '(.panels[].targets[].url_options.headers[] | select(.key == "__tb__deployment").value) = $id' \
+            grafana/dashboards/stg_electric_analysis.json > grafana/dashboards/stg_electric_analysis.json.tmp && \
+            mv grafana/dashboards/stg_electric_analysis.json.tmp grafana/dashboards/stg_electric_analysis.json
 
-          echo "🔄 Replacing placeholder with actual value..."
-          sed "s/{{DEPLOYMENT_ID}}/${DEPLOYMENT_ID}/g" \
-            grafana/dashboards/stg_electric_analysis.template.json \
-            > grafana/dashboards/stg_electric_analysis.json
-
-          echo "✅ Replacement done. First few lines of result:"
-          head -n 10 grafana/dashboards/stg_electric_analysis.json
+          echo "✅ Dashboard JSON updated successfully"
           
       - name: Create PR from staging to main
         env:
