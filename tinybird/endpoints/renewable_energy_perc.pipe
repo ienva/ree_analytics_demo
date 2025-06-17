@@ -4,9 +4,9 @@ DESCRIPTION >
 
 SQL >
     SELECT
-        max(toTimezone(datetime, 'Europe/Madrid')) datetime,
+        max(toTimezone(datetime, 'Europe/Madrid')) max_datetime,
         metric_name,
-        sum(value) value
+        argMax(value, datetime) value
     FROM renewable_generation_mv FINAL
     GROUP BY metric_name
 
@@ -16,7 +16,7 @@ DESCRIPTION >
 
 SQL >
     SELECT
-        toTimezone(datetime, 'Europe/Madrid') datetime,
+        max_datetime datetime,
         sum(value) as total_gen
     FROM generation_rew_node
     GROUP BY datetime
@@ -28,12 +28,12 @@ DESCRIPTION >
 
 SQL >
     SELECT 
-        fs.datetime,
+        fs.max_datetime as datetime,
         fs.metric_name,
         fs.value/ls.total_gen gen_perc
     FROM generation_rew_node fs
     LEFT JOIN all_generation_renew ls
-    ON fs.datetime = ls.datetime
-
+    ON fs.max_datetime = ls.datetime
     
+
 TYPE ENDPOINT
