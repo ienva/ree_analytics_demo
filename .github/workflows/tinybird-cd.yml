@@ -50,6 +50,11 @@ jobs:
         run: |
           cd tinybird
           tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
+      
+      - name: Set deployment ID in Staging dashboard JSON
+        run: |
+          DEPLOYMENT_ID=$(tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment ls | awk '/Staging/ { print $2 }')
+          sed "s/{{DEPLOYMENT_ID}}/${DEPLOYMENT_ID}/g" grafana/dashboards/stg_electric_analysis.template.json > grafana/dashboards/stg_electric_analysis.json
           
       - name: Create PR from staging to main
         env:
