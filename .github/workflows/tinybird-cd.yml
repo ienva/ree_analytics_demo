@@ -54,7 +54,16 @@ jobs:
       - name: Set deployment ID in Staging dashboard JSON
         run: |
           DEPLOYMENT_ID=$(tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment ls | awk '/Staging/ { print $2 }')
+
+          echo "📌 DEPLOYMENT_ID=$DEPLOYMENT_ID"
+
+          echo "🔍 Replacing in template file..."
+          grep '{{DEPLOYMENT_ID}}' grafana/dashboards/stg_electric_analysis.template.json || echo "⚠️ Placeholder not found in template"
+
           sed "s/{{DEPLOYMENT_ID}}/${DEPLOYMENT_ID}/g" grafana/dashboards/stg_electric_analysis.template.json > grafana/dashboards/stg_electric_analysis.json
+
+          echo "✅ Finished replacing. Preview output:"
+          head -n 20 grafana/dashboards/stg_electric_analysis.json
           
       - name: Create PR from staging to main
         env:
