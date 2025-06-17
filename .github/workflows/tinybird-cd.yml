@@ -1,11 +1,9 @@
 name: Tinybird - CD Workflow
 
 on:
-  push:
-    branches:
-      - staging
   pull_request:
     branches:
+      - staging
       - main
     types:
       - closed
@@ -22,7 +20,7 @@ env:
 
 jobs:
   deploy-staging:
-    if: github.ref == 'refs/heads/staging'
+    if: github.event.pull_request.base.ref == 'staging' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
