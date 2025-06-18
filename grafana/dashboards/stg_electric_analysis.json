@@ -143,6 +143,10 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
                 }
               ],
               "method": "GET",
@@ -438,7 +442,13 @@
             "url": "https://api.tinybird.co/v0/pipes/daily_spot_analysis_ep.json",
             "url_options": {
               "data": "",
-              "method": "GET"
+              "method": "GET",
+              "headers": [
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
+                }
+              ]
             }
           }
         ],
@@ -567,6 +577,10 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
                 }
               ],
               "method": "GET",
@@ -708,6 +722,10 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
                 }
               ],
               "method": "GET",
@@ -842,6 +860,10 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
                 }
               ],
               "method": "GET",
@@ -936,7 +958,13 @@
             "url": "https://api.tinybird.co/v0/pipes/generation_by_technology_perc.json",
             "url_options": {
               "data": "",
-              "method": "GET"
+              "method": "GET",
+              "headers": [
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
+                }
+              ]
             }
           }
         ],
@@ -1026,7 +1054,13 @@
             "url": "https://api.tinybird.co/v0/pipes/renewable_energy_perc.json",
             "url_options": {
               "data": "",
-              "method": "GET"
+              "method": "GET",
+              "headers": [
+                {
+                  "key": "__tb__deployment",
+                  "value": "48"
+                }
+              ]
             }
           }
         ],
