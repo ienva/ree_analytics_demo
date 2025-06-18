@@ -62,7 +62,7 @@ jobs:
 
           echo "🔄 Updating dashboard JSON with deployment ID..."
           cd grafana/dashboards
-          jq --arg id "$DEPLOYMENT_ID" '(.panels[].targets[].url_options.headers += [{"key": "__tb__deployment", "value": $id}])' \
+          jq --arg id "$DEPLOYMENT_ID" '(.panels[].targets[].url_options.headers[] | select(.key == "__tb__deployment").value) = $id' \
             stg_electric_analysis.json > stg_electric_analysis.json.tmp && \
             mv stg_electric_analysis.json.tmp stg_electric_analysis.json
 
