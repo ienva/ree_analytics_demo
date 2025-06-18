@@ -38,7 +38,7 @@ SQL >
     SELECT
         gtec.datetime,
         gtec.metric_name,
-        gtec.value/ls.total_generation
+        gtec.value/ls.total_generation value
     FROM generation_by_tech_node gtec
     LEFT JOIN genereation_total_by_time ls
     ON gtec.datetime = ls.datetime
