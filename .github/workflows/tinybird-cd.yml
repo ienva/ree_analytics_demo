@@ -53,6 +53,8 @@ jobs:
           echo "🔧 Getting Staging deployment ID from Tinybird..."
           DEPLOYMENT_ID=$(tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment ls | awk '/Staging/ { print $2 }')
 
+          echo "$DEPLOYMENT_ID"
+
           if [ -z "$DEPLOYMENT_ID" ]; then
             echo "⚠️ No active staging deployment found. Skipping JSON update."
             exit 0
