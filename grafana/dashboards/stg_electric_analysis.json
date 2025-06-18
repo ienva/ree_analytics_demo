@@ -1,1115 +1,1087 @@
 {
-  "annotations": {
-    "list": [
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "panels": [
       {
-        "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
         },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 14,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "right",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "geo_name",
+                "text": "Country",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/daily_spot_prices.json",
+            "url_options": {
+              "data": "",
+              "headers": [
+                {
+                  "key": "start_datetime",
+                  "value": "${__from:date:iso}"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ],
+              "method": "GET",
+              "params": []
+            }
+          }
+        ],
+        "title": "Daily Spot Prices",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "color-text",
+                "wrapText": false
+              },
+              "inspect": false
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "geo_name"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "avg_price"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "currencyEUR"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "thresholds"
+                  }
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 50
+                      },
+                      {
+                        "color": "red",
+                        "value": 90
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "max_price"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "currencyEUR"
+                },
+                {
+                  "id": "color"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 70
+                      },
+                      {
+                        "color": "red",
+                        "value": 100
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "min_price"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "currencyEUR"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 10
+                      },
+                      {
+                        "color": "red",
+                        "value": 40
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "worst_hour"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "#c9c8c8",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Country"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "best_hour"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "#e3e3e3",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "datetime"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "#6e6d6d",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 14
+        },
+        "id": 8,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "geo_name",
+                "text": "Country",
+                "type": "string"
+              },
+              {
+                "selector": "day",
+                "text": "datetime",
+                "type": "string"
+              },
+              {
+                "selector": "avg_price",
+                "text": "avg_price",
+                "type": "number"
+              },
+              {
+                "selector": "best_hour",
+                "text": "best_hour",
+                "type": "number"
+              },
+              {
+                "selector": "min_price",
+                "text": "min_price",
+                "type": "number"
+              },
+              {
+                "selector": "worst_hour",
+                "text": "worst_hour",
+                "type": "number"
+              },
+              {
+                "selector": "max_price",
+                "text": "max_price",
+                "type": "string"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "table",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/daily_spot_analysis_ep.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "headers": [
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ]
+            }
+          }
+        ],
+        "title": "Spot Daily Prices",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 16,
+          "w": 24,
+          "x": 0,
+          "y": 23
+        },
+        "id": 7,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "right",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/estimated_generation_ep.json",
+            "url_options": {
+              "data": "",
+              "headers": [
+                {
+                  "key": "start_datetime",
+                  "value": "${__from:date:iso}"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ],
+              "method": "GET",
+              "params": []
+            }
+          }
+        ],
+        "title": "Generación Solar Estimada",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "megwatt"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": ""
+              },
+              "properties": []
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 12,
+          "x": 0,
+          "y": 39
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "right",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/generation_ep.json",
+            "url_options": {
+              "data": "",
+              "headers": [
+                {
+                  "key": "start_datetime",
+                  "value": "${__from:date:iso}"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ],
+              "method": "GET",
+              "params": []
+            }
+          }
+        ],
+        "title": "Spanish National Electric Generation by Technology",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "megwatt"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 12,
+          "x": 12,
+          "y": 39
+        },
+        "id": 3,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "right",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "datetime",
+                "text": "datetime",
+                "type": "timestamp"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "value",
+                "text": "value",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/national_demand_ep.json",
+            "url_options": {
+              "data": "",
+              "headers": [
+                {
+                  "key": "start_datetime",
+                  "value": "${__from:date:iso}"
+                },
+                {
+                  "key": "end_datetime",
+                  "value": "${__to:date:iso}"
+                },
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ],
+              "method": "GET",
+              "params": []
+            }
+          }
+        ],
+        "title": "Spanish National Electric Demand",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              }
+            },
+            "mappings": [],
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 12,
+          "x": 0,
+          "y": 54
+        },
+        "id": 4,
+        "options": {
+          "displayLabels": [
+            "percent"
+          ],
+          "legend": {
+            "calcs": [],
+            "displayMode": "hidden",
+            "placement": "right",
+            "showLegend": false,
+            "values": []
+          },
+          "pieType": "donut",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "gen_perc",
+                "text": "gen_perc",
+                "type": "number"
+              },
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "table",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/generation_by_technology_perc.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "headers": [
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ]
+            }
+          }
+        ],
+        "title": "Spanish Mix Generation Percentages",
+        "type": "piechart"
+      },
+      {
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "Tinybird Electric Grid Datasources"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              }
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 12,
+          "x": 12,
+          "y": 54
+        },
+        "id": 5,
+        "options": {
+          "displayLabels": [
+            "percent"
+          ],
+          "legend": {
+            "calcs": [],
+            "displayMode": "hidden",
+            "placement": "right",
+            "showLegend": false,
+            "values": []
+          },
+          "pieType": "pie",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.0.1",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "metric_name",
+                "text": "metric_name",
+                "type": "string"
+              },
+              {
+                "selector": "gen_perc",
+                "text": "gen_perc",
+                "type": "number"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "Tinybird Electric Grid Datasources"
+            },
+            "filters": [],
+            "format": "table",
+            "global_query_id": "",
+            "parser": "simple",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "json",
+            "url": "https://api.tinybird.co/v0/pipes/renewable_energy_perc.json",
+            "url_options": {
+              "data": "",
+              "method": "GET",
+              "headers": [
+                {
+                  "key": "__tb__deployment",
+                  "value": "49"
+                }
+              ]
+            }
+          }
+        ],
+        "title": "Renewable VS Non-Renewable Spanish Generation",
+        "type": "piechart"
       }
-    ]
-  },
-  "editable": true,
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "id": 1,
-  "links": [],
-  "panels": [
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "datetime",
-              "text": "datetime",
-              "type": "timestamp"
-            },
-            {
-              "selector": "geo_name",
-              "text": "Country",
-              "type": "string"
-            },
-            {
-              "selector": "value",
-              "text": "value",
-              "type": "number"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "timeseries",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/daily_spot_prices.json",
-          "url_options": {
-            "data": "",
-            "headers": [
-              {
-                "key": "start_datetime",
-                "value": "${__from:date:iso}"
-              },
-              {
-                "key": "end_datetime",
-                "value": "${__to:date:iso}"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ],
-            "method": "GET",
-            "params": []
-          }
-        }
-      ],
-      "title": "Daily Spot Prices",
-      "type": "timeseries"
+    ],
+    "preload": false,
+    "refresh": "1d",
+    "schemaVersion": 41,
+    "tags": [],
+    "templating": {
+      "list": []
     },
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "color-text",
-              "wrapText": false
-            },
-            "inspect": false
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "geo_name"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "avg_price"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "currencyEUR"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "#EAB839",
-                      "value": 50
-                    },
-                    {
-                      "color": "red",
-                      "value": 90
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "max_price"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "currencyEUR"
-              },
-              {
-                "id": "color"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "#EAB839",
-                      "value": 70
-                    },
-                    {
-                      "color": "red",
-                      "value": 100
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "min_price"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "currencyEUR"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "#EAB839",
-                      "value": 10
-                    },
-                    {
-                      "color": "red",
-                      "value": 40
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "worst_hour"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#c9c8c8",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Country"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "best_hour"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#e3e3e3",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "datetime"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#6e6d6d",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 14
-      },
-      "id": 8,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "geo_name",
-              "text": "Country",
-              "type": "string"
-            },
-            {
-              "selector": "day",
-              "text": "datetime",
-              "type": "string"
-            },
-            {
-              "selector": "avg_price",
-              "text": "avg_price",
-              "type": "number"
-            },
-            {
-              "selector": "best_hour",
-              "text": "best_hour",
-              "type": "number"
-            },
-            {
-              "selector": "min_price",
-              "text": "min_price",
-              "type": "number"
-            },
-            {
-              "selector": "worst_hour",
-              "text": "worst_hour",
-              "type": "number"
-            },
-            {
-              "selector": "max_price",
-              "text": "max_price",
-              "type": "string"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/daily_spot_analysis_ep.json",
-          "url_options": {
-            "data": "",
-            "method": "GET",
-            "headers": [
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ]
-          }
-        }
-      ],
-      "title": "Spot Daily Prices",
-      "type": "table"
+    "time": {
+      "from": "now-2d",
+      "to": "now"
     },
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 16,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "datetime",
-              "text": "datetime",
-              "type": "timestamp"
-            },
-            {
-              "selector": "metric_name",
-              "text": "metric_name",
-              "type": "string"
-            },
-            {
-              "selector": "value",
-              "text": "value",
-              "type": "number"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "timeseries",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/estimated_generation_ep.json",
-          "url_options": {
-            "data": "",
-            "headers": [
-              {
-                "key": "start_datetime",
-                "value": "${__from:date:iso}"
-              },
-              {
-                "key": "end_datetime",
-                "value": "${__to:date:iso}"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ],
-            "method": "GET",
-            "params": []
-          }
-        }
-      ],
-      "title": "Generación Solar Estimada",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "megwatt"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": ""
-            },
-            "properties": []
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 12,
-        "x": 0,
-        "y": 39
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "datetime",
-              "text": "datetime",
-              "type": "timestamp"
-            },
-            {
-              "selector": "metric_name",
-              "text": "metric_name",
-              "type": "string"
-            },
-            {
-              "selector": "value",
-              "text": "value",
-              "type": "number"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "timeseries",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/generation_ep.json",
-          "url_options": {
-            "data": "",
-            "headers": [
-              {
-                "key": "start_datetime",
-                "value": "${__from:date:iso}"
-              },
-              {
-                "key": "end_datetime",
-                "value": "${__to:date:iso}"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ],
-            "method": "GET",
-            "params": []
-          }
-        }
-      ],
-      "title": "Spanish National Electric Generation by Technology",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "megwatt"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 12,
-        "x": 12,
-        "y": 39
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "datetime",
-              "text": "datetime",
-              "type": "timestamp"
-            },
-            {
-              "selector": "metric_name",
-              "text": "metric_name",
-              "type": "string"
-            },
-            {
-              "selector": "value",
-              "text": "value",
-              "type": "number"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "timeseries",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/national_demand_ep.json",
-          "url_options": {
-            "data": "",
-            "headers": [
-              {
-                "key": "start_datetime",
-                "value": "${__from:date:iso}"
-              },
-              {
-                "key": "end_datetime",
-                "value": "${__to:date:iso}"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ],
-            "method": "GET",
-            "params": []
-          }
-        }
-      ],
-      "title": "Spanish National Electric Demand",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 12,
-        "x": 0,
-        "y": 54
-      },
-      "id": 4,
-      "options": {
-        "displayLabels": [
-          "percent"
-        ],
-        "legend": {
-          "calcs": [],
-          "displayMode": "hidden",
-          "placement": "right",
-          "showLegend": false,
-          "values": []
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "gen_perc",
-              "text": "gen_perc",
-              "type": "number"
-            },
-            {
-              "selector": "metric_name",
-              "text": "metric_name",
-              "type": "string"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/generation_by_technology_perc.json",
-          "url_options": {
-            "data": "",
-            "method": "GET",
-            "headers": [
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ]
-          }
-        }
-      ],
-      "title": "Spanish Mix Generation Percentages",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "Tinybird Electric Grid Datasources"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": []
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 12,
-        "x": 12,
-        "y": 54
-      },
-      "id": 5,
-      "options": {
-        "displayLabels": [
-          "percent"
-        ],
-        "legend": {
-          "calcs": [],
-          "displayMode": "hidden",
-          "placement": "right",
-          "showLegend": false,
-          "values": []
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "columns": [
-            {
-              "selector": "metric_name",
-              "text": "metric_name",
-              "type": "string"
-            },
-            {
-              "selector": "gen_perc",
-              "text": "gen_perc",
-              "type": "number"
-            }
-          ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "Tinybird Electric Grid Datasources"
-          },
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "simple",
-          "refId": "A",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "https://api.tinybird.co/v0/pipes/renewable_energy_perc.json",
-          "url_options": {
-            "data": "",
-            "method": "GET",
-            "headers": [
-              {
-                "key": "__tb__deployment",
-                "value": "48"
-              },
-              {
-                "key": "__tb__deployment",
-                "value": "50"
-              }
-            ]
-          }
-        }
-      ],
-      "title": "Renewable VS Non-Renewable Spanish Generation",
-      "type": "piechart"
-    }
-  ],
-  "preload": false,
-  "refresh": "1d",
-  "schemaVersion": 41,
-  "tags": [],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-2d",
-    "to": "now"
-  },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "STG - Electric System",
-  "uid": "stg-electric-system",
-  "version": 8
-}
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "STG - Electric System",
+    "uid": "stg-electric-system",
+    "version": 8
+  }
