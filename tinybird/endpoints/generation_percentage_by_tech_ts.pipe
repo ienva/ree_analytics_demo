@@ -1,0 +1,46 @@
+NODE generation_by_tech_node
+DESCRIPTION >
+    Generation timeseries
+
+SQL >
+    %
+    SELECT
+        toTimezone(datetime, 'Europe/Madrid') datetime,
+        metric_name,
+        value
+    FROM generation_mv FINAL
+    WHERE 1=1
+        {% if defined(start_datetime) %}
+        AND toTimezone(datetime, 'Europe/Madrid') >= {{DateTime(start_datetime)}}
+        {% end %}
+        {% if defined(end_datetime) %}
+        AND toTimezone(datetime, 'Europe/Madrid') <= {{DateTime(end_datetime)}}
+        {% end %}
+
+NODE genereation_total_by_time
+DESCRIPTION >
+    Total generation by time
+
+SQL >
+    SELECT 
+        datetime,
+        sum(value) total_generation
+    FROM generation_by_tech_node
+    WHERE value >= 0
+    GROUP BY datetime
+
+
+NODE percentage_calculation
+DESCRIPTION >
+    Making the calculation of the percentages
+
+SQL >
+    SELECT
+        gtec.datetime,
+        gtec.metric_name,
+        gtec.value/ls.total_generation value
+    FROM generation_by_tech_node gtec
+    LEFT JOIN genereation_total_by_time ls
+    ON gtec.datetime = ls.datetime
+
+TYPE ENDPOINT
