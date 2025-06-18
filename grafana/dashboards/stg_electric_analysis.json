@@ -143,14 +143,15 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
-                },
-                {
-                  "key": "__tb__deployment",
-                  "value": "49"
                 }
               ],
               "method": "GET",
-              "params": []
+              "params": [
+                {
+                    "key": "__tb__deployment",
+                    "value": "49"
+                }
+              ]
             }
           }
         ],
@@ -443,10 +444,11 @@
             "url_options": {
               "data": "",
               "method": "GET",
-              "headers": [
+              "headers": [],
+              "params": [
                 {
-                  "key": "__tb__deployment",
-                  "value": "49"
+                    "key": "__tb__deployment",
+                    "value": "49"
                 }
               ]
             }
@@ -577,14 +579,15 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
-                },
-                {
-                  "key": "__tb__deployment",
-                  "value": "49"
                 }
               ],
               "method": "GET",
-              "params": []
+              "params": [
+                {
+                    "key": "__tb__deployment",
+                    "value": "49"
+                }
+              ]
             }
           }
         ],
@@ -722,14 +725,15 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
-                },
-                {
-                  "key": "__tb__deployment",
-                  "value": "49"
                 }
               ],
               "method": "GET",
-              "params": []
+              "params": [
+                {
+                    "key": "__tb__deployment",
+                    "value": "49"
+                }
+              ]
             }
           }
         ],
@@ -860,14 +864,15 @@
                 {
                   "key": "end_datetime",
                   "value": "${__to:date:iso}"
-                },
-                {
-                  "key": "__tb__deployment",
-                  "value": "49"
                 }
               ],
               "method": "GET",
-              "params": []
+              "params": [
+                {
+                    "key": "__tb__deployment",
+                    "value": "49"
+                }
+              ]
             }
           }
         ],
@@ -959,10 +964,11 @@
             "url_options": {
               "data": "",
               "method": "GET",
-              "headers": [
+              "headers": [],
+              "params": [
                 {
-                  "key": "__tb__deployment",
-                  "value": "49"
+                    "key": "__tb__deployment",
+                    "value": "49"
                 }
               ]
             }
@@ -1055,10 +1061,11 @@
             "url_options": {
               "data": "",
               "method": "GET",
-              "headers": [
+              "headers": [],
+              "params": [
                 {
-                  "key": "__tb__deployment",
-                  "value": "49"
+                    "key": "__tb__deployment",
+                    "value": "49"
                 }
               ]
             }
