@@ -53,19 +53,25 @@ jobs:
           echo "🔧 Getting Staging deployment ID from Tinybird..."
           DEPLOYMENT_ID=$(tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment ls | awk '/Staging/ { print $2 }')
 
+          if [ -z "$DEPLOYMENT_ID" ]; then
+            echo "⚠️ No active staging deployment found. Skipping JSON update."
+            exit 0
+          fi
+
           echo "📌 DEPLOYMENT_ID=$DEPLOYMENT_ID"
 
           echo "🔄 Updating dashboard JSON with deployment ID..."
+          cd grafana/dashboards
           jq --arg id "$DEPLOYMENT_ID" '(.panels[].targets[].url_options.headers += [{"key": "__tb__deployment", "value": $id}])' \
-            grafana/dashboards/stg_electric_analysis.json > grafana/dashboards/stg_electric_analysis.json.tmp && \
-            mv grafana/dashboards/stg_electric_analysis.json.tmp grafana/dashboards/stg_electric_analysis.json
+            stg_electric_analysis.json > stg_electric_analysis.json.tmp && \
+            mv stg_electric_analysis.json.tmp stg_electric_analysis.json
 
           echo "✅ Dashboard JSON updated successfully"
           
           echo "📝 Committing and pushing changes..."
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add grafana/dashboards/stg_electric_analysis.json
+          git add stg_electric_analysis.json
           git commit -m "Update staging dashboard with deployment ID $DEPLOYMENT_ID"
           git push origin staging
           
