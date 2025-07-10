@@ -2,18 +2,10 @@
 apiVersion: 1
 
 datasources:
-  - name: Tinybird-REE-Analysis
-    type: tinybird-tinybird-datasource
-    access: proxy
-    isDefault: false
-    secureJsonData:
-      host: "https://api.tinybird.co"
-      token: "${TINYBIRD_TOKEN}"
-
   - name: Tinybird Electric Grid Datasources
     type: yesoreyeram-infinity-datasource
     access: proxy
-    isDefault: false
+    isDefault: true
 
     jsonData:
       auth_method: bearerToken
@@ -26,3 +18,24 @@ datasources:
     secureJsonData:
       # authenticationMethod: bearerToken
       bearerToken: ${TINYBIRD_TOKEN}
+
+  - name: Tinybird via ClickHouse
+    type: grafana-clickhouse-datasource
+    access: proxy
+    isDefault: false
+    url: https://api.tinybird.co
+    basicAuth: false
+
+    jsonData:
+      server: api.tinybird.co
+      port: 443
+      protocol: http
+      secure: true
+      defaultDatabase: default
+      httpMode: 'POST'
+      path: /v0/sql
+      httpHeaders:
+        - name: Authorization
+          value: Bearer ${TINYBIRD_TOKEN}
+          secure: true
+
