@@ -24,7 +24,6 @@ on:
 env:
   TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
-  TB_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
   ORG_ID: ${{ secrets.ORG_ID }}
 
 jobs:
