@@ -66,10 +66,9 @@ jobs:
         run: |
           echo "🚀 Creating new Tinybird workspace: ${{ github.event.inputs.target_workspace }}"
           
-          # Create new workspace using Tinybird CLI
+          # Create new workspace using Tinybird CLI (name is positional)
           # The CLI will use the default token to create the workspace
-          tb --cloud workspace create \
-            --name "${{ github.event.inputs.target_workspace }}" \
+          tb --cloud workspace create "${{ github.event.inputs.target_workspace }}" \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}"
           
