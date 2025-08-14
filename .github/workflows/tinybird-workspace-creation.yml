@@ -68,7 +68,7 @@ jobs:
           
           # Create new workspace using Tinybird CLI
           # The CLI will use the default token to create the workspace
-          tb workspace create \
+          tb --cloud workspace create \
             --name "${{ github.event.inputs.target_workspace }}" \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}"
@@ -81,7 +81,7 @@ jobs:
           # Wait a moment for the workspace to be fully created
           sleep 5
           
-          WORKSPACE_INFO=$(tb workspace ls \
+          WORKSPACE_INFO=$(tb --cloud workspace ls \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
             --format json | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
@@ -89,7 +89,7 @@ jobs:
           if [ -z "$WORKSPACE_INFO" ] || [ "$WORKSPACE_INFO" = "null" ]; then
             echo "❌ Failed to get workspace information. Retrying..."
             sleep 10
-            WORKSPACE_INFO=$(tb workspace ls \
+            WORKSPACE_INFO=$(tb --cloud workspace ls \
               --host "${{ env.TINYBIRD_HOST }}" \
               --token "${{ env.TINYBIRD_TOKEN }}" \
               --format json | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
@@ -120,7 +120,7 @@ jobs:
           cd tinybird
           
           # Deploy all resources (datasources, endpoints, materializations)
-          tb deploy \
+          tb --cloud deploy \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "$TARGET_TOKEN" \
             --workspace "${{ github.event.inputs.target_workspace }}"
@@ -134,13 +134,13 @@ jobs:
           
           # List all resources in the new workspace
           echo "📊 Datasources:"
-          tb datasource ls \
+          tb --cloud datasource ls \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "$TARGET_TOKEN" \
             --workspace "${{ github.event.inputs.target_workspace }}"
           
           echo "🔗 Endpoints:"
-          tb pipe ls \
+          tb --cloud pipe ls \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "$TARGET_TOKEN" \
             --workspace "${{ github.event.inputs.target_workspace }}"
@@ -162,7 +162,7 @@ jobs:
               
               # Get the last partition from source workspace
               echo "📥 Getting last partition from source workspace..."
-              last_partition=$(tb datasource partition ls "$datasource_name" \
+              last_partition=$(tb --cloud datasource partition ls "$datasource_name" \
                 --host "${{ env.TINYBIRD_HOST }}" \
                 --token "$SOURCE_TOKEN" \
                 --workspace "${{ github.event.inputs.source_workspace }}" \
@@ -175,7 +175,7 @@ jobs:
                 temp_dir=$(mktemp -d)
                 
                 # Export data from source workspace
-                tb datasource partition export "$datasource_name" "$last_partition" \
+                tb --cloud datasource partition export "$datasource_name" "$last_partition" \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$SOURCE_TOKEN" \
                   --workspace "${{ github.event.inputs.source_workspace }}" \
@@ -183,7 +183,7 @@ jobs:
                 
                 # Import data to target workspace
                 if [ -f "$temp_dir/${datasource_name}_${last_partition}.parquet" ]; then
-                  tb datasource append "$datasource_name" \
+                  tb --cloud datasource append "$datasource_name" \
                     --host "${{ env.TINYBIRD_HOST }}" \
                     --token "$TARGET_TOKEN" \
                     --workspace "${{ github.event.inputs.target_workspace }}" \
@@ -265,7 +265,7 @@ jobs:
           # Only attempt cleanup if we have the target token
           if [ -n "$TARGET_TOKEN" ]; then
             echo "🗑️ Attempting to delete workspace: ${{ github.event.inputs.target_workspace }}"
-            tb workspace delete "${{ github.event.inputs.target_workspace }}" \
+            tb --cloud workspace delete "${{ github.event.inputs.target_workspace }}" \
               --host "${{ env.TINYBIRD_HOST }}" \
               --token "$TARGET_TOKEN" \
               --force || echo "⚠️ Could not delete workspace (may not exist)"
