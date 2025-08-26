@@ -11,10 +11,6 @@ on:
         description: 'Target workspace name (to create and copy data to)'
         required: true
         type: string
-      user_token:
-        description: 'User Token'
-        required: true
-        type: string
       copy_data:
         description: 'Copy last partition data from source to target'
         required: false
@@ -71,9 +67,8 @@ jobs:
         run: |
           echo "🚀 Creating new Tinybird workspace: ${{ github.event.inputs.target_workspace }}"
           # Create new workspace using Tinybird CLI with organization context only
-          tb --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \ 
-            --cloud workspace create "${{ github.event.inputs.target_workspace }}" \
-            --organization-id "${{ env.ORG_ID }}"
+          tb --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
+            --organization-id "${{ env.ORG_ID }}" --cloud workspace create "${{ github.event.inputs.target_workspace }}" 
           
           echo "✅ Workspace created successfully"
           
