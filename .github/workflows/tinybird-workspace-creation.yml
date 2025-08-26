@@ -97,16 +97,15 @@ jobs:
           
           # List all resources in the new workspace
           echo "📊 Datasources:"
-          tb --cloud datasource ls \
-            --host "${{ env.TINYBIRD_HOST }}" \
+          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            --workspace "${{ github.event.inputs.target_workspace }}"
+            --workspace "${{ github.event.inputs.target_workspace }}" \
+            datasource ls
           
           echo "🔗 Endpoints:"
-          tb --cloud pipe ls \
-            --host "${{ env.TINYBIRD_HOST }}" \
+          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            --workspace "${{ github.event.inputs.target_workspace }}"
+            --workspace "${{ github.event.inputs.target_workspace }}" pipe ls 
           
           echo "✅ Deployment verification completed"
 
