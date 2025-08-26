@@ -76,47 +76,6 @@ jobs:
           
           echo "✅ Workspace created successfully"
           
-          # Get the workspace token for the newly created workspace
-          echo "🔑 Extracting workspace token..."
-          
-          # Wait a moment for the workspace to be fully created
-          sleep 5
-          
-          WORKSPACE_INFO=$(tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace ls | awk -v target="${{ github.event.inputs.target_workspace }}" '
-                  $1 == "name:" { name=$2 } 
-                  $1 == "id:"   { id=$2 } 
-                  $1 == "current:" {   
-                    if (name == target) print id 
-                  }') 
-          
-          if [ -z "$WORKSPACE_INFO" ] || [ "$WORKSPACE_INFO" = "null" ]; then
-            echo "❌ Failed to get workspace information. Retrying..."
-            sleep 10
-            RAW_JSON=$(tb --cloud  --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace ls || true)
-            CLEAN_JSON=$(printf "%s" "$RAW_JSON" | sed -n '/^[[:space:]]*[\[{]/,$p')
-            WORKSPACE_INFO=$(printf "%s" "$CLEAN_JSON" | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
-            
-            if [ -z "$WORKSPACE_INFO" ] || [ "$WORKSPACE_INFO" = "null" ]; then
-              echo "❌ Failed to get workspace information after retry"
-              exit 1
-            fi
-          fi
-
-          echo "$WORKSPACE_INFO"
-          
-          # Extract the token from the workspace info
-          TARGET_TOKEN=$(echo "$WORKSPACE_INFO" | jq -r '.token')
-          
-          if [ -z "$TARGET_TOKEN" ] || [ "$TARGET_TOKEN" = "null" ]; then
-            echo "❌ Failed to extract workspace token"
-            echo "Workspace info: $WORKSPACE_INFO"
-            exit 1
-          fi
-          
-          echo "✅ Target workspace token extracted: ${TARGET_TOKEN:0:10}..."
-          
-          # Export the token for use in subsequent steps
-          echo "TARGET_TOKEN=$TARGET_TOKEN" >> $GITHUB_ENV
 
       - name: Deploy resources to new workspace
         run: |
@@ -126,7 +85,7 @@ jobs:
           # Deploy all resources (datasources, endpoints, materializations)
           tb --cloud deploy \
             --host "${{ env.TINYBIRD_HOST }}" \
-            --token "$TARGET_TOKEN" \
+            --token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --workspace "${{ github.event.inputs.target_workspace }}"
           
           echo "✅ Resources deployed successfully"
@@ -140,13 +99,13 @@ jobs:
           echo "📊 Datasources:"
           tb --cloud datasource ls \
             --host "${{ env.TINYBIRD_HOST }}" \
-            --token "$TARGET_TOKEN" \
+            --token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --workspace "${{ github.event.inputs.target_workspace }}"
           
           echo "🔗 Endpoints:"
           tb --cloud pipe ls \
             --host "${{ env.TINYBIRD_HOST }}" \
-            --token "$TARGET_TOKEN" \
+            --token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --workspace "${{ github.event.inputs.target_workspace }}"
           
           echo "✅ Deployment verification completed"
