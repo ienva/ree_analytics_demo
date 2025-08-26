@@ -68,7 +68,7 @@ jobs:
           echo "🚀 Creating new Tinybird workspace: ${{ github.event.inputs.target_workspace }}"
           # Create new workspace using Tinybird CLI with organization context only
           tb --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            --organization-id "${{ env.ORG_ID }}" --cloud workspace create "${{ github.event.inputs.target_workspace }}" 
+            --cloud workspace create --organization-id "${{ env.ORG_ID }}" "${{ github.event.inputs.target_workspace }}" 
           
           echo "✅ Workspace created successfully"
           
