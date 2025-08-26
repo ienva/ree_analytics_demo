@@ -82,22 +82,27 @@ jobs:
           # Wait a moment for the workspace to be fully created
           sleep 5
 
-          result=$(tb workspace ls \
+          tb local start
+
+          result=$(tb --cloud workspace ls \
             --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --format json)
 
           echo "$result"
           
-          WORKSPACE_INFO=$(tb workspace ls \
+          WORKSPACE_INFO=$(tb --cloud workspace ls \
             --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --format json | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
           
           if [ -z "$WORKSPACE_INFO" ] || [ "$WORKSPACE_INFO" = "null" ]; then
             echo "❌ Failed to get workspace information. Retrying..."
             sleep 10
-            WORKSPACE_INFO=$(tb workspace ls \
+            RAW_JSON=$(tb --cloud workspace ls \
+              --host "${{ env.TINYBIRD_HOST }}" \
               --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
-              --format json | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
+              --format json || true)
+            CLEAN_JSON=$(printf "%s" "$RAW_JSON" | sed -n '/^[[:space:]]*[\[{]/,$p')
+            WORKSPACE_INFO=$(printf "%s" "$CLEAN_JSON" | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
             
             if [ -z "$WORKSPACE_INFO" ] || [ "$WORKSPACE_INFO" = "null" ]; then
               echo "❌ Failed to get workspace information after retry"
