@@ -83,10 +83,9 @@ jobs:
           cd tinybird
           
           # Deploy all resources (datasources, endpoints, materializations)
-          tb --cloud deploy \
-            --host "${{ env.TINYBIRD_HOST }}" \
+          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            --workspace "${{ github.event.inputs.target_workspace }}"
+            --workspace "${{ github.event.inputs.target_workspace }}" deploy 
           
           echo "✅ Resources deployed successfully"
 
