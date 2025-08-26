@@ -25,6 +25,7 @@ env:
   TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
   ORG_ID: ${{ secrets.ORG_ID }}
+  TINYBIRD_USER_TOKEN: ${{ secrets.TINYBIRD_USER_TOKEN }}
 
 jobs:
   create-workspace-and-migrate:
@@ -67,8 +68,11 @@ jobs:
         run: |
           echo "🚀 Creating new Tinybird workspace: ${{ github.event.inputs.target_workspace }}"
           # Create new workspace using Tinybird CLI with organization context only
-          tb --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            --cloud workspace create --organization-id "${{ env.ORG_ID }}" "${{ github.event.inputs.target_workspace }}" 
+          tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
+            workspace create --organization-id "${{ env.ORG_ID }}" "${{ github.event.inputs.target_workspace }}" 
           
           echo "✅ Workspace created successfully"
           
