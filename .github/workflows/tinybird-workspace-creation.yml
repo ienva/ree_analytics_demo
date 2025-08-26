@@ -82,8 +82,6 @@ jobs:
           # Wait a moment for the workspace to be fully created
           sleep 5
 
-          tb local start
-
           result=$(tb --cloud workspace ls \
             --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --format json)
