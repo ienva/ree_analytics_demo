@@ -82,7 +82,7 @@ jobs:
           # Wait a moment for the workspace to be fully created
           sleep 5
           
-          WORKSPACE_INFO=$(tb --cloud workspace ls \
+          WORKSPACE_INFO=$(tb workspace ls \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
             --format json | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
@@ -90,7 +90,7 @@ jobs:
           if [ -z "$WORKSPACE_INFO" ] || [ "$WORKSPACE_INFO" = "null" ]; then
             echo "❌ Failed to get workspace information. Retrying..."
             sleep 10
-            WORKSPACE_INFO=$(tb --cloud workspace ls \
+            WORKSPACE_INFO=$(tb workspace ls \
               --host "${{ env.TINYBIRD_HOST }}" \
               --token "${{ env.TINYBIRD_TOKEN }}" \
               --format json | jq -r ".[] | select(.name == \"${{ github.event.inputs.target_workspace }}\")")
