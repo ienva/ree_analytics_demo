@@ -82,9 +82,11 @@ jobs:
           # Wait a moment for the workspace to be fully created
           sleep 5
 
-          echo $(tb workspace ls \
+          result=$(tb workspace ls \
             --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
             --format json)
+
+          echo "$result"
           
           WORKSPACE_INFO=$(tb workspace ls \
             --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
