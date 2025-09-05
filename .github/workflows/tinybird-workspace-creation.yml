@@ -81,11 +81,16 @@ jobs:
         run: |
           echo "📦 Deploying all resources to new workspace..."
           cd tinybird
+
+          echo "Selecting the tokens to make the deployment"
+          tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace use "${{ github.event.inputs.target_workspace }}"
+          tb token ls
+          ADMIN_TOKEN_NEW=$(tb token ls | awk '/name: admin token/{getline; print $2}')
           
           # Deploy all resources (datasources, endpoints, materializations)
           tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
-            --token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            --workspace "${{ github.event.inputs.target_workspace }}" deploy 
+            --token "${{ env.ADMIN_TOKEN_NEW }}" \
+            deploy --wait 
           
           echo "✅ Resources deployed successfully"
 
