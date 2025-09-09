@@ -24,10 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: staging
-          token: ${{ secrets.GH_PAT }}
       
       - name: Fetch full git history
         run: |
@@ -46,7 +42,7 @@ jobs:
       - name: Deploy to Tinybird Staging
         run: |
           cd tinybird
-          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create --allow-destructive-operations
       
       - name: Set deployment ID in Staging dashboard JSON
         run: |
