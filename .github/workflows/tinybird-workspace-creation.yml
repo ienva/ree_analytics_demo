@@ -141,19 +141,19 @@ jobs:
               tb --cloud \
                 --host "${{ env.TINYBIRD_HOST }}" \
                 --token "$TINYBIRD_TOKEN" \
-                datasource export "$datasource_name" --rows 1000 --target "$temp_dir/${datasource_name}_${last_partition}.parquet"
+                datasource export "$datasource_name" --rows 1000 --target "$temp_dir/${datasource_name}.parquet"
               
               # Import data to target workspace
-              if [ -f "$temp_dir/${datasource_name}_${last_partition}.parquet" ]; then
+              if [ -f "$temp_dir/${datasource_name}.parquet" ]; then
                 tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$ADMIN_TOKEN_NEW" \
                   datasource append "$datasource_name" \
-                  --file "$temp_dir/${datasource_name}_${last_partition}.parquet"
+                  --file "$temp_dir/${datasource_name}.parquet"
                 
-                echo "✅ Successfully copied partition $last_partition for $datasource_name"
+                echo "✅ Successfully copied data for $datasource_name"
               else
-                echo "⚠️ No data file found for $datasource_name partition $last_partition"
+                echo "⚠️ No data file found for $datasource_name"
               fi
               
               # Clean up temporary directory
