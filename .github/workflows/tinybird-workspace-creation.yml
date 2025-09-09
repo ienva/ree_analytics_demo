@@ -138,17 +138,19 @@ jobs:
               temp_dir=$(mktemp -d)
               
               # Export data from source workspace
-              tb --cloud datasource export "$datasource_name" "$last_partition" \
+              tb --cloud \
                 --host "${{ env.TINYBIRD_HOST }}" \
-                --token "$TINYBIRD_TOKEN" --rows 1000 \
-                --target "$temp_dir/${datasource_name}_${last_partition}.parquet"
+                --token "$TINYBIRD_TOKEN" \
+                --target "$temp_dir/${datasource_name}_${last_partition}.parquet" \
+                datasource export "$datasource_name" --rows 1000
               
               # Import data to target workspace
               if [ -f "$temp_dir/${datasource_name}_${last_partition}.parquet" ]; then
-                tb --cloud datasource append "$datasource_name" \
+                tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$ADMIN_TOKEN_NEW" \
-                  "$temp_dir/${datasource_name}_${last_partition}.parquet"
+                  datasource append "$datasource_name" \
+                  --file "$temp_dir/${datasource_name}_${last_partition}.parquet"
                 
                 echo "✅ Successfully copied partition $last_partition for $datasource_name"
               else
@@ -229,5 +231,5 @@ jobs:
             tb --cloud \
               --host "${{ env.TINYBIRD_HOST }}" \
               --token "$TINYBIRD_USER_TOKEN" \
-              --force workspace delete "${{ github.event.inputs.target_workspace }}" || echo "⚠️ Could not delete workspace (may not exist)"
+              workspace delete "${{ github.event.inputs.target_workspace }}" --yes || echo "⚠️ Could not delete workspace (may not exist)"
           fi 
