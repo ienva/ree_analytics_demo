@@ -141,8 +141,7 @@ jobs:
               tb --cloud \
                 --host "${{ env.TINYBIRD_HOST }}" \
                 --token "$TINYBIRD_TOKEN" \
-                --target "$temp_dir/${datasource_name}_${last_partition}.parquet" \
-                datasource export "$datasource_name" --rows 1000
+                datasource export "$datasource_name" --rows 1000 --target "$temp_dir/${datasource_name}_${last_partition}.parquet"
               
               # Import data to target workspace
               if [ -f "$temp_dir/${datasource_name}_${last_partition}.parquet" ]; then
