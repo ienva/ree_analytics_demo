@@ -125,41 +125,41 @@ jobs:
               echo "🔄 Processing datasource: $datasource_name"
               
               # Get the last partition from source workspace
-              echo "📥 Getting last partition from source workspace..."
-              last_partition=$(tb --cloud datasource partition ls "$datasource_name" \
-                --host "${{ env.TINYBIRD_HOST }}" \
-                --token "$TINYBIRD_TOKEN" \
-                --format json | jq -r '.[-1].name' 2>/dev/null || echo "")
+              # echo "📥 Getting last partition from source workspace..."
+              # last_partition=$(tb --cloud datasource partition ls "$datasource_name" \
+              #   --host "${{ env.TINYBIRD_HOST }}" \
+              #   --token "$TINYBIRD_TOKEN" \
+              #   --format json | jq -r '.[-1].name' 2>/dev/null || echo "")
               
-              if [ -n "$last_partition" ] && [ "$last_partition" != "null" ]; then
-                echo "📦 Copying partition: $last_partition"
+              # if [ -n "$last_partition" ] && [ "$last_partition" != "null" ]; then
+              #   echo "📦 Copying partition: $last_partition"
                 
-                # Create a temporary directory for the data
-                temp_dir=$(mktemp -d)
-                
-                # Export data from source workspace
-                tb --cloud datasource partition export "$datasource_name" "$last_partition" \
+              # Create a temporary directory for the data
+              temp_dir=$(mktemp -d)
+              
+              # Export data from source workspace
+              tb --cloud datasource export "$datasource_name" "$last_partition" \
+                --host "${{ env.TINYBIRD_HOST }}" \
+                --token "$TINYBIRD_TOKEN" --rows 1000 \
+                --target "$temp_dir/${datasource_name}_${last_partition}.parquet"
+              
+              # Import data to target workspace
+              if [ -f "$temp_dir/${datasource_name}_${last_partition}.parquet" ]; then
+                tb --cloud datasource append "$datasource_name" \
                   --host "${{ env.TINYBIRD_HOST }}" \
-                  --token "$TINYBIRD_TOKEN" \
-                  --output "$temp_dir/${datasource_name}_${last_partition}.parquet"
+                  --token "$ADMIN_TOKEN_NEW" \
+                  "$temp_dir/${datasource_name}_${last_partition}.parquet"
                 
-                # Import data to target workspace
-                if [ -f "$temp_dir/${datasource_name}_${last_partition}.parquet" ]; then
-                  tb --cloud datasource append "$datasource_name" \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "$ADMIN_TOKEN_NEW" \
-                    "$temp_dir/${datasource_name}_${last_partition}.parquet"
-                  
-                  echo "✅ Successfully copied partition $last_partition for $datasource_name"
-                else
-                  echo "⚠️ No data file found for $datasource_name partition $last_partition"
-                fi
-                
-                # Clean up temporary directory
-                rm -rf "$temp_dir"
+                echo "✅ Successfully copied partition $last_partition for $datasource_name"
               else
-                echo "⚠️ No partitions found for datasource: $datasource_name"
+                echo "⚠️ No data file found for $datasource_name partition $last_partition"
               fi
+              
+              # Clean up temporary directory
+              rm -rf "$temp_dir"
+              # else
+              #   echo "⚠️ No partitions found for datasource: $datasource_name"
+              # fi
             fi
           done
           
@@ -171,7 +171,7 @@ jobs:
           cd tinybird
           
           # Run tests against the new workspace
-          tb \
+          tb --cloud \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "$ADMIN_TOKEN_NEW" \
             test run 
@@ -224,10 +224,10 @@ jobs:
           echo "🧹 Cleaning up on failure..."
           
           # Only attempt cleanup if we have the target token
-          if [ -n "$ADMIN_TOKEN_NEW" ]; then
+          if [ -n "$TINYBIRD_USER_TOKEN" ]; then
             echo "🗑️ Attempting to delete workspace: ${{ github.event.inputs.target_workspace }}"
             tb --cloud \
               --host "${{ env.TINYBIRD_HOST }}" \
-              --token "$ADMIN_TOKEN_NEW" \
+              --token "$TINYBIRD_USER_TOKEN" \
               --force workspace delete "${{ github.event.inputs.target_workspace }}" || echo "⚠️ Could not delete workspace (may not exist)"
           fi 

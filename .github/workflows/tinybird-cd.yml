@@ -22,12 +22,10 @@ jobs:
   deploy-staging:
     if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'staging' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: staging
-          token: ${{ secrets.GH_PAT }}
       
       - name: Fetch full git history
         run: |
@@ -46,7 +44,7 @@ jobs:
       - name: Deploy to Tinybird Staging
         run: |
           cd tinybird
-          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create
+          tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deployment create --allow-destructive-operations
       
       - name: Set deployment ID in Staging dashboard JSON
         run: |
