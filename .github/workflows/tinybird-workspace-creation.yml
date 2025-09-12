@@ -142,6 +142,8 @@ jobs:
                 --host "${{ env.TINYBIRD_HOST }}" \
                 --token "$TINYBIRD_TOKEN" \
                 datasource export "$datasource_name" --rows 1000 --format CSV
+
+              ls -la tinybird/datasources/fixtures/
               
               # Import data to target workspace
               if [ -f "/tinybird/datasources/fixtures/${datasource_name}.csv" ]; then
@@ -154,7 +156,7 @@ jobs:
                 echo "✅ Successfully copied data for $datasource_name"
               else
                 echo "⚠️ No data file found for $datasource_name"
-              fis
+              fi
               
               # Clean up temporary directory
               rm -rf "/tinybird/datasources/fixtures/"
