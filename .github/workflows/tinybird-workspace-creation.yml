@@ -144,7 +144,7 @@ jobs:
                 datasource export "$datasource_name" --rows 1000 --format CSV
               
               # Import data to target workspace
-              if [ -f "$temp_dir/${datasource_name}.parquet" ]; then
+              if [ -f "/fixtures/${datasource_name}.csv" ]; then
                 tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$ADMIN_TOKEN_NEW" \
@@ -157,7 +157,7 @@ jobs:
               fi
               
               # Clean up temporary directory
-              rm -rf "$temp_dir"
+              rm -rf "/fixtures/"
               # else
               #   echo "⚠️ No partitions found for datasource: $datasource_name"
               # fi
