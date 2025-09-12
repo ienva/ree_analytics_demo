@@ -149,7 +149,7 @@ jobs:
                 if [ -f "fixtures/${datasource_name}.csv" ]; then
                   tb --cloud \
                     --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "$ADMIN_TOKEN_NEW" \
+                    --token "${{ env.ADMIN_TOKEN_NEW }}"\
                     datasource append "$datasource_name" \
                     --file "fixtures/${datasource_name}.csv"
                   
