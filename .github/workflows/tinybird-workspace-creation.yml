@@ -135,13 +135,13 @@ jobs:
               #   echo "📦 Copying partition: $last_partition"
                 
               # Create a temporary directory for the data
-              temp_dir=$(mktemp -d)
+              # temp_dir=$(mktemp -d)
               
               # Export data from source workspace
               tb --cloud \
                 --host "${{ env.TINYBIRD_HOST }}" \
                 --token "$TINYBIRD_TOKEN" \
-                datasource export "$datasource_name" --rows 1000 --target "$temp_dir/${datasource_name}.parquet"
+                datasource export "$datasource_name" --rows 1000 --target "/tmp/${datasource_name}.parquet"
               
               # Import data to target workspace
               if [ -f "$temp_dir/${datasource_name}.parquet" ]; then
@@ -149,7 +149,7 @@ jobs:
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$ADMIN_TOKEN_NEW" \
                   datasource append "$datasource_name" \
-                  --file "$temp_dir/${datasource_name}.parquet"
+                  --file "/tmp/${datasource_name}.parquet"
                 
                 echo "✅ Successfully copied data for $datasource_name"
               else
