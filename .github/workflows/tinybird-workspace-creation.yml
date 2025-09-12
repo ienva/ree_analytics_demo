@@ -143,7 +143,14 @@ jobs:
                 --token "$TINYBIRD_TOKEN" \
                 datasource export "$datasource_name" --rows 1000 --format CSV
 
-              ls -la tinybird/datasources/fixtures/
+              ls -la 
+
+              cd ..
+              ls -la
+              ls -la fixtures/
+              cd ..
+              ls -la
+              ls -la /fixtures/
               
               # Import data to target workspace
               if [ -f "/tinybird/datasources/fixtures/${datasource_name}.csv" ]; then
