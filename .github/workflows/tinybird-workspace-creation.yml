@@ -144,12 +144,10 @@ jobs:
                 datasource export "$datasource_name" --rows 1000 --format CSV
 
               ls -la 
+              ls -la fixtures/
 
               cd ..
-              ls -la
-              ls -la fixtures/
               cd ..
-              ls -la
               ls -la /fixtures/
               
               # Import data to target workspace
