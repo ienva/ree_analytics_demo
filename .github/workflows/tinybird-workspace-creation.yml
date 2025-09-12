@@ -147,6 +147,7 @@ jobs:
 
               cd ..
               ls -la
+              ls -la fixtures/
               cd ..
               ls -la
               ls -la /fixtures/
