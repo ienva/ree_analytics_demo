@@ -144,20 +144,20 @@ jobs:
                 datasource export "$datasource_name" --rows 1000 --format CSV
               
               # Import data to target workspace
-              if [ -f "/fixtures/${datasource_name}.csv" ]; then
+              if [ -f "/tinybird/datasources/fixtures/${datasource_name}.csv" ]; then
                 tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$ADMIN_TOKEN_NEW" \
                   datasource append "$datasource_name" \
-                  --file "/fixtures/${datasource_name}.parquet"
+                  --file "/tinybird/datasources/fixtures/${datasource_name}.parquet"
                 
                 echo "✅ Successfully copied data for $datasource_name"
               else
                 echo "⚠️ No data file found for $datasource_name"
-              fi
+              fis
               
               # Clean up temporary directory
-              rm -rf "/fixtures/"
+              rm -rf "/tinybird/datasources/fixtures/"
               # else
               #   echo "⚠️ No partitions found for datasource: $datasource_name"
               # fi
@@ -172,10 +172,8 @@ jobs:
           cd tinybird
           
           # Run tests against the new workspace
-          tb --cloud \
-            --host "${{ env.TINYBIRD_HOST }}" \
-            --token "$ADMIN_TOKEN_NEW" \
-            test run 
+          tb build
+          tb test run 
           
           echo "✅ Tests completed successfully"
 
