@@ -155,7 +155,7 @@ jobs:
                 echo "Selectin last partition value for $datasource_name"
                 last_partition_value=$(tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
-                  --token "$TINYBIRD_TOKEN" \
+                  --token "${{ env.TINYBIRD_TOKEN }}" \
                   sql "SELECT _partition_id
                       FROM $datasource_name
                       ORDER BY _part_index DESC
@@ -166,7 +166,7 @@ jobs:
                 # Export data from source workspace
                 tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
-                  --token "$TINYBIRD_TOKEN" \
+                  --token "${{ env.TINYBIRD_TOKEN }}" \
                   datasource export "$datasource_name" --where "$where_clause" --format CSV
               else
                 echo "⚠️ Datasource $datasource_name is a materializations, skipping"
