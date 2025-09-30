@@ -141,12 +141,32 @@ jobs:
               datasource_name=$(basename "$datasource_file" .datasource)
               if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
                 echo "🔄 Processing datasource: $datasource_name"
-                
+                echo "Selecting partition key or date tiem field to export data"
+                partition_key=$(grep -oP 'ENGINE_PARTITION_KEY\s*"\K[^"]+' "$input_file")
+                if [ -n "$partition_key" ]; then
+                   echo "$partition_key"
+                else
+                    # If not found, get the first DateTime field from SCHEMA
+                    partition_key=$(grep -oP '`[^`]+`\s+DateTime' "$input_file" | head -n1 | awk '{print $1}' | tr -d '`')
+                    echo "$partition_key"
+                fi
+
+                # Selecting last partition value
+                last_partition_value=$(tb --cloud \
+                  --host "${{ env.TINYBIRD_HOST }}" \
+                  --token "$TINYBIRD_TOKEN" \
+                  sql "SELECT _partition_id
+                      FROM $datasource_name
+                      ORDER BY _part_index DESC
+                      LIMIT 1" | awk '/^─/{getline; print $1; exit}')
+
+                where_clause="toString($partition_key) = '$last_partition_value'"
+
                 # Export data from source workspace
                 tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$TINYBIRD_TOKEN" \
-                  datasource export "$datasource_name" --rows 1000 --format CSV
+                  datasource export "$datasource_name" --where "$where_clause" --format CSV
               else
                 echo "⚠️ Datasource $datasource_name is a materializations, skipping"
               fi
