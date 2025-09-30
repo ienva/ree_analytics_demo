@@ -142,16 +142,17 @@ jobs:
               if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
                 echo "🔄 Processing datasource: $datasource_name"
                 echo "Selecting partition key or date tiem field to export data"
-                partition_key=$(grep -oP 'ENGINE_PARTITION_KEY\s*"\K[^"]+' "$datasource_file")
+                partition_key=$(grep -E 'ENGINE_PARTITION_KEY\s*"\K[^"]+' "$datasource_file")
                 if [ -n "$partition_key" ]; then
                    echo "$partition_key"
                 else
                     # If not found, get the first DateTime field from SCHEMA
-                    partition_key=$(grep -oP '`[^`]+`\s+DateTime' "$datasource_file" | head -n1 | awk '{print $1}' | tr -d '`')
+                    partition_key=$(grep -E '`[^`]+`\s+DateTime' "$datasource_file" | head -n1 | awk '{print $1}' | tr -d '`')
                     echo "$partition_key"
                 fi
 
                 # Selecting last partition value
+                echo "Selectin last partition value for $datasource_name"
                 last_partition_value=$(tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "$TINYBIRD_TOKEN" \
