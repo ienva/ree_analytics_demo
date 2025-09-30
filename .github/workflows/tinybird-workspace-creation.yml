@@ -145,11 +145,19 @@ jobs:
                 partition_key=$(awk -F'"' '/^[[:space:]]*ENGINE_PARTITION_KEY/ {print $2; exit}' "$datasource_file")
                 if [ -z "$partition_key" ]; then
                   echo "🔄 Processing datasource: $datasource_name"
-                  # Export data from source workspace
-                  tb --cloud \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "$TINYBIRD_TOKEN" \
-                    datasource export "$datasource_name" --rows 10000 --format CSV
+                  datetime_fiel_key=$(grep -Eo '`[^`]+`[[:space:]]+DateTime' "$datasource_file" | head -n1 | sed -E 's/^`([^`]+)`.*/\1/')
+                  if [ -z "$datetime_fiel_key" ]; then
+                    # Export data from source workspace
+                    tb --cloud \
+                      --host "${{ env.TINYBIRD_HOST }}" \
+                      --token "$TINYBIRD_TOKEN" \
+                      datasource export "$datasource_name" --rows 10000 --format CSV
+                  else
+                    where_clause="$datetime_fiel_key >= now() - INTERVAL 1 DAY"
+                    tb --cloud \
+                      --host "${{ env.TINYBIRD_HOST }}" \
+                      --token "$TINYBIRD_TOKEN" \
+                      datasource export "$datasource_name" --where "$where_clause" --format CSV
                 else
                   echo "Partition key: $partition_key"
                   # Selecting last partition value
