@@ -141,7 +141,7 @@ jobs:
               datasource_name=$(basename "$datasource_file" .datasource)
               if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
                 echo "🔄 Processing datasource: $datasource_name"
-                echo "Selecting partition key or date tiem field to export data"
+                echo "Selecting partition key or date time field to export data"
                 partition_key=$(awk -F'"' '/^[[:space:]]*ENGINE_PARTITION_KEY/ {print $2; exit}' "$datasource_file")
 
                 # If the partition key doesn't exists will check for a datetime value or will export 10k radom rows
@@ -164,7 +164,7 @@ jobs:
                       --token "$TINYBIRD_TOKEN" \
                       datasource export "$datasource_name" --where "$where_clause" --format CSV
                   fi
-                  
+
                 # It exists partition key
                 else
                   echo "Partition key: $partition_key"
