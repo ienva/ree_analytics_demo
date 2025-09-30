@@ -142,32 +142,35 @@ jobs:
               if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
                 echo "🔄 Processing datasource: $datasource_name"
                 echo "Selecting partition key or date tiem field to export data"
-                partition_key=$(grep -E 'ENGINE_PARTITION_KEY\s*"\K[^"]+' "$datasource_file" | awk '{print $2}')
-                if [ -n "$partition_key" ]; then
-                   echo "$partition_key"
+                partition_key=$(awk -F'"' '/^[[:space:]]*ENGINE_PARTITION_KEY/ {print $2; exit}' "$datasource_file")
+                if [ -z "$partition_key" ]; then
+                  echo "🔄 Processing datasource: $datasource_name"
+                  # Export data from source workspace
+                  tb --cloud \
+                    --host "${{ env.TINYBIRD_HOST }}" \
+                    --token "$TINYBIRD_TOKEN" \
+                    datasource export "$datasource_name" --rows 10000 --format CSV
                 else
-                    # If not found, get the first DateTime field from SCHEMA
-                    partition_key=$(grep -E '`[^`]+`\s+DateTime' "$datasource_file" | head -n1 | awk '{print $1}' | tr -d '`')
-                    echo "$partition_key"
+                  echo "Partition key: $partition_key"
+                  # Selecting last partition value
+                  echo "Selecting last partition value for $datasource_name"
+                  last_partition_value=$(tb --cloud \
+                    --host "${{ env.TINYBIRD_HOST }}" \
+                    --token "${{ env.TINYBIRD_TOKEN }}" \
+                    sql "SELECT _partition_id
+                        FROM $datasource_name
+                        ORDER BY _part_index DESC
+                        LIMIT 1" | awk '/^─/{getline; print $1; exit}')
+
+                  where_clause="toString($partition_key) = '$last_partition_value'"
+
+                  # Export data from source workspace
+                  tb --cloud \
+                    --host "${{ env.TINYBIRD_HOST }}" \
+                    --token "${{ env.TINYBIRD_TOKEN }}" \
+                    datasource export "$datasource_name" --where "$where_clause" --format CSV
                 fi
 
-                # Selecting last partition value
-                echo "Selecting last partition value for $datasource_name"
-                last_partition_value=$(tb --cloud \
-                  --host "${{ env.TINYBIRD_HOST }}" \
-                  --token "${{ env.TINYBIRD_TOKEN }}" \
-                  sql "SELECT _partition_id
-                      FROM $datasource_name
-                      ORDER BY _part_index DESC
-                      LIMIT 1" | awk '/^─/{getline; print $1; exit}')
-
-                where_clause="toString($partition_key) = '$last_partition_value'"
-
-                # Export data from source workspace
-                tb --cloud \
-                  --host "${{ env.TINYBIRD_HOST }}" \
-                  --token "${{ env.TINYBIRD_TOKEN }}" \
-                  datasource export "$datasource_name" --where "$where_clause" --format CSV
               else
                 echo "⚠️ Datasource $datasource_name is a materializations, skipping"
               fi
