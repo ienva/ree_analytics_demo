@@ -13,4 +13,5 @@ SCHEMA >
     `value` Float64  `json:$.value`
 
 ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(datetime)"
 ENGINE_SORTING_KEY "metric_id, last_update"
