@@ -142,7 +142,7 @@ jobs:
               if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
                 echo "🔄 Processing datasource: $datasource_name"
                 echo "Selecting partition key or date tiem field to export data"
-                partition_key=$(grep -E 'ENGINE_PARTITION_KEY\s*"\K[^"]+' "$datasource_file")
+                partition_key=$(grep -E 'ENGINE_PARTITION_KEY\s*"\K[^"]+' "$datasource_file" | awk '{print $2}')
                 if [ -n "$partition_key" ]; then
                    echo "$partition_key"
                 else
@@ -152,7 +152,7 @@ jobs:
                 fi
 
                 # Selecting last partition value
-                echo "Selectin last partition value for $datasource_name"
+                echo "Selecting last partition value for $datasource_name"
                 last_partition_value=$(tb --cloud \
                   --host "${{ env.TINYBIRD_HOST }}" \
                   --token "${{ env.TINYBIRD_TOKEN }}" \
