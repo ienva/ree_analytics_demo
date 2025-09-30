@@ -184,7 +184,7 @@ jobs:
                   tb --cloud \
                     --host "${{ env.TINYBIRD_HOST }}" \
                     --token "${{ env.TINYBIRD_TOKEN }}" \
-                    datasource export "$datasource_name" --where "$where_clause" --format CSV
+                    datasource export "$datasource_name" --where "$where_clause" --rows 1000000 --format CSV
                 fi
 
               else
