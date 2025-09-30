@@ -151,12 +151,16 @@ jobs:
                     echo "$partition_key"
                 fi
 
-                function=$("$partition_key" | grep -oP '^[^(]+')
-                if [ -n "$function" ]; then
-                  where_clause="$partition_key = $function(now())"
-                else
-                  where_clause="$partition_key >= now() - INTERVAL 7 DAY"
-                fi
+                # Selecting last partition value
+                last_partition_value=$(tb --cloud \
+                  --host "${{ env.TINYBIRD_HOST }}" \
+                  --token "$TINYBIRD_TOKEN" \
+                  sql "SELECT _partition_id
+                      FROM $datasource_name
+                      ORDER BY _part_index DESC
+                      LIMIT 1" | awk '/^─/{getline; print $1; exit}')
+
+                where_clause="toString($partition_key) = '$last_partition_value'"
 
                 # Export data from source workspace
                 tb --cloud \
