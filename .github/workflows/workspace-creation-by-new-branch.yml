@@ -51,12 +51,15 @@ jobs:
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
             workspace current || true)
-          NAME=$(printf "%s" "$CURRENT" | awk -F'|' '/^\|/{gsub(/^ *| *$/,"",$2); if ($2!="name" && $2!="" ){print $2; exit}}')
+          # Extract the first "name: ..." value line
+          NAME=$(printf "%s" "$CURRENT" | sed -n 's/^name:[[:space:]]*//p' | head -n1)
+
           if [ -z "$NAME" ]; then
             echo "❌ Could not detect current workspace name. Output was:"
             echo "$CURRENT"
             exit 1
           fi
+
           echo "SOURCE_WS=$NAME" >> $GITHUB_ENV
 
       - name: Set target workspace name 
