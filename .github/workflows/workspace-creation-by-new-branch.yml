@@ -1,4 +1,4 @@
-name: Tinybird Workspace Creation and Data Migration
+name: Tinybird Branches Replacement -> New workspace when new branches to deploy are created.
 
 on:
   workflow_dispatch:
