@@ -105,8 +105,6 @@ jobs:
           echo "Selecting the tokens to make the deployment"
           tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace use "${{ env.TARGET_WS }}"
           ADMIN_TOKEN_NEW=$(tb --cloud token ls | awk '/name: admin token/{getline; print $2}')
-
-          echo "ADMIN_TOKEN_NEW=$ADMIN_TOKEN_NEW" >> $GITHUB_ENV
           
           # Deploy all resources (datasources, endpoints, materializations)
           tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
