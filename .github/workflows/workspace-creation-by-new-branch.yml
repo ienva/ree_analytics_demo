@@ -1,13 +1,6 @@
 name: Tinybird Branches Replacement -> New workspace when new branches to deploy are created.
 
 on:
-  workflow_dispatch:
-    inputs:
-      copy_data:
-        description: 'Copy last partition data from source to target'
-        required: false
-        type: boolean
-        default: true
   create: {}
 
 env:
@@ -65,15 +58,27 @@ jobs:
       - name: Set target workspace name 
         run: |
           NAME="${{ env.SOURCE_WS }}_${{ github.ref_name }}"
-          NAME_SANITIZED=${NAME//\//-}
-          echo "TARGET_WS=$NAME_SANITIZED" >> $GITHUB_ENV
+          # Replace any character not [A-Za-z0-9_] with underscore
+          NAME_SANITIZED=$(printf "%s" "$NAME" | sed -E 's/[^A-Za-z0-9_]+/_/g')
+          # Collapse multiple underscores and trim leading/trailing underscores
+          NAME_SANITIZED=$(printf "%s" "$NAME_SANITIZED" | sed -E 's/_+/_/g; s/^_+//; s/_+$//')
+          # Ensure name starts with a letter by prefixing 'name_' if needed
+          case "$NAME_SANITIZED" in
+            [A-Za-z]*) TARGET_WS="$NAME_SANITIZED" ;;
+            *) TARGET_WS="name_$NAME_SANITIZED" ;;
+          esac
+          # Fallback in case sanitization produced empty string
+          if [ -z "$TARGET_WS" ]; then
+            TARGET_WS="name_${RANDOM}"
+          fi
+          echo "TARGET_WS=$TARGET_WS" >> $GITHUB_ENV
 
       - name: Validate inputs
         run: |
           echo "🔍 Validating workflow inputs..."
           echo "Source workspace: ${{ env.SOURCE_WS }}"
           echo "Target workspace: ${{ env.TARGET_WS }}"
-          echo "Copy data: ${{ github.event.inputs.copy_data }}"
+          echo "Copy last partition data: True by default"
           
           if [ "${{ env.SOURCE_WS }}" = "${{ env.TARGET_WS }}" ]; then
             echo "❌ Source and target workspaces cannot be the same"
@@ -129,7 +134,6 @@ jobs:
           echo "✅ Deployment verification completed"
 
       - name: Export data from datasources
-        if: github.event.inputs.copy_data == 'true'
         run: |
           echo "📋 Copying last partition data from source to target workspace..."
 
@@ -211,7 +215,6 @@ jobs:
 
 
       - name: Copy data in the new workspace
-        if: github.event.inputs.copy_data == 'true'
         run: |
           echo "📋 Copying last partition data from source to target workspace..."
 
@@ -295,11 +298,9 @@ jobs:
           
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ github.event.inputs.copy_data }}" = "true" ]; then
-            echo "### 📋 Data Migration" >> $GITHUB_STEP_SUMMARY
-            echo "- **Source Workspace**: ${{ github.event.inputs.source_workspace }}" >> $GITHUB_STEP_SUMMARY
-            echo "- **Data Copied**: Last partition from each datasource" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "### 📋 Data Migration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Workspace**: ${{ github.event.inputs.source_workspace }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Data Copied**: Last partition from each datasource" >> $GITHUB_STEP_SUMMARY
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔗 Next Steps" >> $GITHUB_STEP_SUMMARY
