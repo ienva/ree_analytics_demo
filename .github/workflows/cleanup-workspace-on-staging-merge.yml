@@ -72,7 +72,8 @@ jobs:
             echo "🗑️ Workspace found. Deleting: ${{ env.TARGET_WS }}"
             tb --cloud \
               --host "${{ env.TINYBIRD_HOST }}" \
-              --token "${{ env.TINYBIRD_USER_TOKEN }}" \
+              --token "${{ env.TINYBIRD_TOKEN }}" \
+              --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
               workspace delete "${{ env.TARGET_WS }}" --yes || echo "⚠️ Workspace deletion command failed"
           else
             echo "✅ Workspace not found. Nothing to delete."
