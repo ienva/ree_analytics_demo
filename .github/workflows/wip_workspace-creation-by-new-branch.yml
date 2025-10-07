@@ -282,6 +282,7 @@ jobs:
                   echo "📥 Appending ${#chunk_files[@]} chunk(s) into $datasource_name"
                   for file in "${chunk_files[@]}"; do
                     echo "  → ${file}"
+                    echo "tb --cloud --host ${{ env.TINYBIRD_HOST }} --token .... datasource append $datasource_name --file $file "
                     tb --cloud \
                       --host "${{ env.TINYBIRD_HOST }}" \
                       --token "${{ env.ADMIN_TOKEN_NEW }}" \
