@@ -222,6 +222,7 @@ jobs:
                   while [ "$offset" -lt "$total_rows" ]; do
                     rows=$(curl -H "Authorization: Bearer ${{ env.TINYBIRD_TOKEN }}" \
                       --data-urlencode "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow" \
+                      "${{ env.TINYBIRD_HOST }}/v0/sql" \
                       | tee "fixtures/${datasource_name}_part_${idx}.ndjson" \
                       | wc -l)
                     # subtract header if present; stop when no data
