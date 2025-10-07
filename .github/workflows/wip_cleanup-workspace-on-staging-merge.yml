@@ -1,0 +1,101 @@
+name: Cleanup Tinybird Workspace on Staging Merge
+
+on:
+  pull_request:
+    branches:
+      - staging
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+env:
+  TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
+  TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
+  TINYBIRD_USER_TOKEN: ${{ secrets.TINYBIRD_USER_TOKEN }}
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Determine source workspace (current)
+        run: |
+          echo "🔎 Detecting current Tinybird source workspace via CLI..."
+          CURRENT=$(tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            workspace current || true)
+          SOURCE_WS=$(printf "%s" "$CURRENT" | sed -n 's/^name:[[:space:]]*//p' | head -n1)
+          if [ -z "$SOURCE_WS" ]; then
+            echo "❌ Could not detect current workspace name. Output was:"
+            echo "$CURRENT"
+            exit 1
+          fi
+          echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
+
+      - name: Compute workspace name from merged branch
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          RAW_NAME="${{ env.SOURCE_WS }}_${BRANCH}"
+          # Apply same sanitization rules used on creation:
+          NAME_SANITIZED=$(printf "%s" "$RAW_NAME" | sed -E 's/[^A-Za-z0-9_]+/_/g' | sed -E 's/_+/_/g; s/^_+//; s/_+$//')
+          case "$NAME_SANITIZED" in
+            [A-Za-z]*) TARGET_WS="$NAME_SANITIZED" ;;
+            *) TARGET_WS="name_$NAME_SANITIZED" ;;
+          esac
+          if [ -z "$TARGET_WS" ]; then TARGET_WS="name_${RANDOM}"; fi
+          echo "TARGET_WS=$TARGET_WS" >> $GITHUB_ENV
+          echo "🧭 Computed workspace to delete: $TARGET_WS"
+
+      - name: Delete Tinybird workspace if it exists
+        run: |
+          echo "🔎 Checking if Tinybird workspace exists: ${{ env.TARGET_WS }}"
+          LIST=$(tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_USER_TOKEN }}" \
+            workspace ls || true)
+          # Extract all workspace names from key:value lines
+          MATCH=$(printf "%s" "$LIST" | sed -n 's/^name:[[:space:]]*//p' | grep -Fx "${{ env.TARGET_WS }}" || true)
+          if [ -n "$MATCH" ]; then
+            echo "🗑️ Workspace found. Deleting: ${{ env.TARGET_WS }}"
+            tb --cloud \
+              --host "${{ env.TINYBIRD_HOST }}" \
+              --token "${{ env.TINYBIRD_TOKEN }}" \
+              --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
+              workspace delete "${{ env.TARGET_WS }}" --yes || echo "⚠️ Workspace deletion command failed"
+          else
+            echo "✅ Workspace not found. Nothing to delete."
+          fi
+
+      - name: Delete merged branch in repository (best-effort)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          if [ "$BRANCH" = "staging" ] || [ "$BRANCH" = "main" ]; then
+            echo "Skipping deletion of protected branch: $BRANCH"
+            exit 0
+          fi
+          echo "🗑️ Deleting remote branch: $BRANCH"
+          # Attempt via git first
+          git push origin --delete "$BRANCH" || {
+            echo "git push delete failed, trying GitHub API"
+            # Fallback via GitHub API
+            gh api \
+              -X DELETE \
+              repos/${{ github.repository }}/git/refs/heads/"$BRANCH" || echo "⚠️ Could not delete branch via API"
+          }
+
+
