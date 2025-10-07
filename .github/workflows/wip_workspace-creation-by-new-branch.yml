@@ -220,8 +220,8 @@ jobs:
                   offset=0
                   idx=0
                   while [ "$offset" -lt "$total_rows" ]; do
-                    rows=$(tb --cloud --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" \
-                      sql "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset" \
+                    rows=$(curl -H "Authorization: Bearer ${{ env.TINYBIRD_TOKEN }}" \
+                      --data-urlencode "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow" \
                       | tee "fixtures/${datasource_name}_part_${idx}.ndjson" \
                       | wc -l)
                     # subtract header if present; stop when no data
