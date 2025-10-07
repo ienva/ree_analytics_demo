@@ -209,13 +209,19 @@ jobs:
 
                   where_clause="toString($partition_key) = '$last_partition_value'"
 
+                  # Optional: stabilize paging when you have a datetime field
+                  order_by_clause=""
+                  if [ -n "$datetime_field_key" ]; then
+                    order_by_clause="ORDER BY $datetime_field_key"
+                  fi
+
                   # Export data from source workspace
                   page_size=500000   # tune down if still >100MiB
                   offset=0
                   idx=0
                   while [ "$offset" -lt "$total_rows" ]; do
                     rows=$(tb --cloud --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" \
-                      sql "select * from $datasource_name where $where_clause limit $page_size offset $offset" \
+                      sql "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset" \
                       | tee "fixtures/${datasource_name}_part_${idx}.csv" \
                       | wc -l)
                     # subtract header if present; stop when no data
