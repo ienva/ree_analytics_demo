@@ -222,7 +222,7 @@ jobs:
                     echo "Exporting: ${datasource_name}_part_${idx}.ndjson"
                     echo "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow"
                     curl -H "Authorization: Bearer ${{ env.TINYBIRD_TOKEN }}" \
-                      --data-urlencode "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow" \
+                      --data-urlencode "q=select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow" \
                       "${{ env.TINYBIRD_HOST }}/v0/sql" \
                       -o "fixtures/${datasource_name}_part_${idx}.ndjson"
                     offset=$((offset+page_size)) 
