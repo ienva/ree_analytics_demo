@@ -154,6 +154,7 @@ jobs:
           
           # Get list of datasources from the tinybird directory
           cd tinybird/datasources
+          mkdir -p fixtures
           
           for datasource_file in *.datasource; do
             if [ -f "$datasource_file" ]; then
@@ -163,10 +164,11 @@ jobs:
                 echo "Selecting partition key or date time field to export data"
                 partition_key=$(awk -F'"' '/^[[:space:]]*ENGINE_PARTITION_KEY/ {print $2; exit}' "$datasource_file")
 
+                datetime_field_key=$(grep -Eo '`[^`]+`[[:space:]]+DateTime' "$datasource_file" | head -n1 | sed -E 's/^`([^`]+)`.*/\1/')
+
                 # If the partition key doesn't exists will check for a datetime value or will export 1M radom rows
                 if [ -z "$partition_key" ]; then
                   echo "🔄 Processing datasource: $datasource_name"
-                  datetime_field_key=$(grep -Eo '`[^`]+`[[:space:]]+DateTime' "$datasource_file" | head -n1 | sed -E 's/^`([^`]+)`.*/\1/')
 
                   # It doesn't exist datetime field
                   if [ -z "$datetime_field_key" ]; then
@@ -181,7 +183,7 @@ jobs:
                     tb --cloud \
                       --host "${{ env.TINYBIRD_HOST }}" \
                       --token "$TINYBIRD_TOKEN" \
-                      datasource export "$datasource_name" --where "$where_clause" --rows 1000000--format CSV
+                      datasource export "$datasource_name" --where "$where_clause" --rows 1000000 --format CSV
                   fi
 
                 # It exists partition key
@@ -208,10 +210,19 @@ jobs:
                   where_clause="toString($partition_key) = '$last_partition_value'"
 
                   # Export data from source workspace
-                  tb --cloud \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "${{ env.TINYBIRD_TOKEN }}" \
-                    datasource export "$datasource_name" --where "$where_clause" --rows "$total_rows" --format CSV
+                  page_size=500000   # tune down if still >100MiB
+                  offset=0
+                  idx=0
+                  while [ "$offset" -lt "$total_rows" ]; do
+                    rows=$(tb --cloud --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" \
+                      sql "select * from $datasource_name where $where_clause limit $page_size offset $offset" \
+                      | tee "fixtures/${datasource_name}_part_${idx}.csv" \
+                      | wc -l)
+                    # subtract header if present; stop when no data
+                    [ "$rows" -le 1 ] && { rm -f "fixtures/${datasource_name}_part_${idx}.csv"; break; }
+                    offset=$((offset+page_size))
+                    idx=$((idx+1))
+                  done
                 fi
 
               else
@@ -254,17 +265,26 @@ jobs:
                 echo "🔄 Processing datasource: $datasource_name"
                 
                 # Import data to target workspace
-                if [ -f "fixtures/${datasource_name}.csv" ]; then
-                  tb --cloud \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "${{ env.ADMIN_TOKEN_NEW }}"\
-                    datasource append "$datasource_name" \
-                    --file "fixtures/${datasource_name}.csv"
-                  
-                  echo "✅ Successfully copied data for $datasource_name"
+                # Import data to target workspace (process all chunk files)
+                shopt -s nullglob
+                chunk_files=(fixtures/${datasource_name}_part_*.csv)
+
+                if [ ${#chunk_files[@]} -eq 0 ]; then
+                  echo "⚠️ No chunk files found for $datasource_name"
                 else
-                  echo "⚠️ No data file found for $datasource_name"
+                  echo "📥 Appending ${#chunk_files[@]} chunk(s) into $datasource_name"
+                  for file in "${chunk_files[@]}"; do
+                    echo "  → ${file}"
+                    tb --cloud \
+                      --host "${{ env.TINYBIRD_HOST }}" \
+                      --token "${{ env.ADMIN_TOKEN_NEW }}" \
+                      datasource append "$datasource_name" \
+                      --file "$file"
+                  done
+                  echo "🧹 Cleaning chunk files for $datasource_name"
+                  rm -f "fixtures/${datasource_name}_part_"*.csv
                 fi
+                shopt -u nullglob
                 
                 # Clean up temporary directory
                 rm -rf "fixtures/"
