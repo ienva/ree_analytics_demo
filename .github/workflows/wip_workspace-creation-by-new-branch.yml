@@ -154,6 +154,7 @@ jobs:
           
           # Get list of datasources from the tinybird directory
           cd tinybird/datasources
+          mkdir -p fixtures
           
           for datasource_file in *.datasource; do
             if [ -f "$datasource_file" ]; then
@@ -163,10 +164,11 @@ jobs:
                 echo "Selecting partition key or date time field to export data"
                 partition_key=$(awk -F'"' '/^[[:space:]]*ENGINE_PARTITION_KEY/ {print $2; exit}' "$datasource_file")
 
+                datetime_field_key=$(grep -Eo '`[^`]+`[[:space:]]+DateTime' "$datasource_file" | head -n1 | sed -E 's/^`([^`]+)`.*/\1/')
+
                 # If the partition key doesn't exists will check for a datetime value or will export 1M radom rows
                 if [ -z "$partition_key" ]; then
                   echo "🔄 Processing datasource: $datasource_name"
-                  datetime_field_key=$(grep -Eo '`[^`]+`[[:space:]]+DateTime' "$datasource_file" | head -n1 | sed -E 's/^`([^`]+)`.*/\1/')
 
                   # It doesn't exist datetime field
                   if [ -z "$datetime_field_key" ]; then
@@ -211,7 +213,7 @@ jobs:
                   page_size=500000   # tune down if still >100MiB
                   offset=0
                   idx=0
-                  while :; do
+                  while [ "$offset" -lt "$total_rows" ]; do
                     rows=$(tb --cloud --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" \
                       sql "select * from $datasource_name where $where_clause limit $page_size offset $offset" \
                       | tee "fixtures/${datasource_name}_part_${idx}.csv" \
