@@ -176,14 +176,14 @@ jobs:
                     tb --cloud \
                       --host "${{ env.TINYBIRD_HOST }}" \
                       --token "$TINYBIRD_TOKEN" \
-                      datasource export "$datasource_name" --rows 1000000 --format CSV
+                      datasource export "$datasource_name" --rows 1000000 --format ndjson
                   # It exists the date time field
                   else
                     where_clause="$datetime_field_key >= now() - INTERVAL 1 DAY"
                     tb --cloud \
                       --host "${{ env.TINYBIRD_HOST }}" \
                       --token "$TINYBIRD_TOKEN" \
-                      datasource export "$datasource_name" --where "$where_clause" --rows 1000000 --format CSV
+                      datasource export "$datasource_name" --where "$where_clause" --rows 1000000 --format ndjson
                   fi
 
                 # It exists partition key
@@ -206,24 +206,31 @@ jobs:
 
                   echo "Last partition: $last_partition_value | Rows: $total_rows"
 
-
                   where_clause="toString($partition_key) = '$last_partition_value'"
+
+                  # Optional: stabilize paging when you have a datetime field
+                  order_by_clause=""
+                  if [ -n "$datetime_field_key" ]; then
+                    order_by_clause="ORDER BY $datetime_field_key"
+                  fi
 
                   # Export data from source workspace
                   page_size=500000   # tune down if still >100MiB
                   offset=0
                   idx=0
                   while [ "$offset" -lt "$total_rows" ]; do
-                    rows=$(tb --cloud --host "${{ env.TINYBIRD_HOST }}" --token "${{ env.TINYBIRD_TOKEN }}" \
-                      sql "select * from $datasource_name where $where_clause limit $page_size offset $offset" \
-                      | tee "fixtures/${datasource_name}_part_${idx}.csv" \
-                      | wc -l)
-                    # subtract header if present; stop when no data
-                    [ "$rows" -le 1 ] && { rm -f "fixtures/${datasource_name}_part_${idx}.csv"; break; }
-                    offset=$((offset+page_size))
+                    echo "Exporting: ${datasource_name}_part_${idx}.ndjson"
+                    echo "select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow"
+                    curl -H "Authorization: Bearer ${{ env.TINYBIRD_TOKEN }}" \
+                      --data-urlencode "q=select * from $datasource_name where $where_clause $order_by_clause LIMIT $page_size OFFSET $offset FORMAT JSONEachRow" \
+                      "${{ env.TINYBIRD_HOST }}/v0/sql" \
+                      -o "fixtures/${datasource_name}_part_${idx}.ndjson"
+                    offset=$((offset+page_size)) 
                     idx=$((idx+1))
                   done
                 fi
+
+                ls -la fixtures/
 
               else
                 echo "⚠️ Datasource $datasource_name is a materializations, skipping"
@@ -267,7 +274,7 @@ jobs:
                 # Import data to target workspace
                 # Import data to target workspace (process all chunk files)
                 shopt -s nullglob
-                chunk_files=(fixtures/${datasource_name}_part_*.csv)
+                chunk_files=(fixtures/${datasource_name}_part_*.ndjson)
 
                 if [ ${#chunk_files[@]} -eq 0 ]; then
                   echo "⚠️ No chunk files found for $datasource_name"
@@ -275,6 +282,7 @@ jobs:
                   echo "📥 Appending ${#chunk_files[@]} chunk(s) into $datasource_name"
                   for file in "${chunk_files[@]}"; do
                     echo "  → ${file}"
+                    echo "tb --cloud --host ${{ env.TINYBIRD_HOST }} --token .... datasource append $datasource_name --file $file "
                     tb --cloud \
                       --host "${{ env.TINYBIRD_HOST }}" \
                       --token "${{ env.ADMIN_TOKEN_NEW }}" \
@@ -282,7 +290,7 @@ jobs:
                       --file "$file"
                   done
                   echo "🧹 Cleaning chunk files for $datasource_name"
-                  rm -f "fixtures/${datasource_name}_part_"*.csv
+                  rm -f "fixtures/${datasource_name}_part_"*.ndjson
                 fi
                 shopt -u nullglob
                 
