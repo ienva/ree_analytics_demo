@@ -1,0 +1,25 @@
+NODE generation_sink_node
+DESCRIPTION >
+    Generation sink
+
+SQL >
+    SELECT
+            last_update,
+            datetime,
+            datetime_utc,
+            tz_time,
+            geo_id,
+            geo_name,
+            metric_id,
+            metric_name,
+            value
+        FROM  generation_mv FINAL
+
+TYPE sink
+EXPORT_CONNECTION_NAME "s3sample"
+EXPORT_BUCKET_URI "s3://sinks-integration/ienriquez/sinks/"
+EXPORT_FILE_TEMPLATE "generation_mv" 
+EXPORT_SCHEDULE "@on-demand" 
+EXPORT_FORMAT "csv"
+EXPORT_COMPRESSION "gz"
+EXPORT_STRATEGY "replace" 
