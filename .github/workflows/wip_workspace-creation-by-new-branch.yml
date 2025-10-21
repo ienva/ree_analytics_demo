@@ -105,6 +105,17 @@ jobs:
           echo "Selecting the tokens to make the deployment"
           tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace use "${{ env.TARGET_WS }}"
           ADMIN_TOKEN_NEW=$(tb --cloud token ls | awk '/name: admin token/{getline; print $2}')
+
+          ## Include this part if there is any connection to set up in the new workspace
+          ## Access Key creation:
+          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.ADMIN_TOKEN_NEW }}" \
+            secret set s3_access_key_test_aa "${{ env.s3_sinks_access_key }}"
+          
+          # Secret creation:
+          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.ADMIN_TOKEN_NEW }}" \
+            secret set s3_secret_test_aa "${{ env.s3_sinks_secret_key }}"
           
           # Deploy all resources (datasources, endpoints, materializations)
           tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
