@@ -8,6 +8,8 @@ env:
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
   ORG_ID: ${{ secrets.ORG_ID }}
   TINYBIRD_USER_TOKEN: ${{ secrets.TINYBIRD_USER_TOKEN }}
+  S3_SINKS_ACCESS_KEY: ${{ secrets.s3_sinks_access_key }}
+  S3_SINKS_SECRET_KEY: ${{ secrets.s3_sinks_secret_key }}
 
 jobs:
   create-workspace-and-migrate:
@@ -110,12 +112,12 @@ jobs:
           ## Access Key creation:
           tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.ADMIN_TOKEN_NEW }}" \
-            secret set s3_access_key_test_aa "${{ env.s3_sinks_access_key }}"
+            secret set s3_access_key_test_aa "${{ env.S3_SINKS_ACCESS_KEY }}"
           
           # Secret creation:
           tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.ADMIN_TOKEN_NEW }}" \
-            secret set s3_secret_test_aa "${{ env.s3_sinks_secret_key }}"
+            secret set s3_secret_test_aa "${{ env.S3_SINKS_SECRET_KEY }}"
           
           # Deploy all resources (datasources, endpoints, materializations)
           tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
