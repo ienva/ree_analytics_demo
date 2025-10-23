@@ -1,0 +1,81 @@
+name: Tinybird Environment Build on Push
+
+on:
+  push:
+    branches:
+      - '*'  # Triggers on push to any branch
+
+env:
+  TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
+  TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
+
+jobs:
+  build-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Detect current workspace
+        run: |
+          echo "🔎 Detecting current Tinybird workspace..."
+          CURRENT=$(tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            workspace current || true)
+          SOURCE_WS=$(printf "%s" "$CURRENT" | sed -n 's/^name:[[:space:]]*//p' | head -n1)
+          if [ -z "$SOURCE_WS" ]; then
+            echo "❌ Could not detect current workspace name. Output was:"
+            echo "$CURRENT"
+            exit 1
+          fi
+          echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
+
+      - name: Compute environment name from branch
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          RAW_NAME="${{ env.SOURCE_WS }}_${BRANCH}"
+          # Apply same sanitization rules used on creation:
+          NAME_SANITIZED=$(printf "%s" "$RAW_NAME" | sed -E 's/[^A-Za-z0-9_]+/_/g' | sed -E 's/_+/_/g; s/^_+//; s/_+$//')
+          case "$NAME_SANITIZED" in
+            [A-Za-z]*) TARGET_ENV="$NAME_SANITIZED" ;;
+            *) TARGET_ENV="name_$NAME_SANITIZED" ;;
+          esac
+          if [ -z "$TARGET_ENV" ]; then TARGET_ENV="name_${RANDOM}"; fi
+          echo "TARGET_ENV=$TARGET_ENV" >> $GITHUB_ENV
+          echo "🧭 Computed environment to build: $TARGET_ENV"
+
+      - name: Check if environment exists
+        run: |
+          echo "🔎 Checking if environment exists: ${{ env.TARGET_ENV }}"
+          LIST=$(tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            environment ls || true)
+          # Extract all environment names from key:value lines
+          MATCH=$(printf "%s" "$LIST" | sed -n 's/^name:[[:space:]]*//p' | grep -Fx "${{ env.TARGET_ENV }}" || true)
+          if [ -n "$MATCH" ]; then
+            echo "✅ Environment found: ${{ env.TARGET_ENV }}"
+            echo "ENV_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "⚠️ Environment not found: ${{ env.TARGET_ENV }}"
+            echo "ENV_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build environment (if exists)
+        if: env.ENV_EXISTS == 'true'
+        run: |
+          echo "🔨 Building environment: ${{ env.TARGET_ENV }}"
+          tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            --environment="${{ env.TARGET_ENV }}" build
+          
+          echo "✅ Environment build completed successfully"

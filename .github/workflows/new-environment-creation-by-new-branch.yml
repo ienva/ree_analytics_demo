@@ -1,0 +1,88 @@
+name: Tinybird Branches Replacement -> New environment command workflow
+
+on:
+  create: {}
+
+env:
+  TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
+  TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
+
+jobs:
+  create-environment-last-partition:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Guard non-branch create events
+        if: github.event_name == 'create'
+        run: |
+          if [ "${{ github.ref_type }}" != "branch" ]; then
+            echo "Not a branch create event. Exiting."
+            exit 78
+          fi
+      
+      - name: Install Tinybird CLI
+        run: |
+          curl https://tinybird.co | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Determine source workspace (current)
+        run: |
+          echo "🔎 Detecting current Tinybird source workspace via CLI..."
+          CURRENT=$(tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            workspace current || true)
+          SOURCE_WS=$(printf "%s" "$CURRENT" | sed -n 's/^name:[[:space:]]*//p' | head -n1)
+          if [ -z "$SOURCE_WS" ]; then
+            echo "❌ Could not detect current workspace name. Output was:"
+            echo "$CURRENT"
+            exit 1
+          fi
+          echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
+
+      - name: Set target workspace name 
+        run: |
+          NAME="${{ env.SOURCE_WS }}_${{ github.ref_name }}"
+          # Replace any character not [A-Za-z0-9_] with underscore
+          NAME_SANITIZED=$(printf "%s" "$NAME" | sed -E 's/[^A-Za-z0-9_]+/_/g')
+          # Collapse multiple underscores and trim leading/trailing underscores
+          NAME_SANITIZED=$(printf "%s" "$NAME_SANITIZED" | sed -E 's/_+/_/g; s/^_+//; s/_+$//')
+          # Ensure name starts with a letter by prefixing 'name_' if needed
+          case "$NAME_SANITIZED" in
+            [A-Za-z]*) TARGET_WS="$NAME_SANITIZED" ;;
+            *) TARGET_WS="name_$NAME_SANITIZED" ;;
+          esac
+          # Fallback in case sanitization produced empty string
+          if [ -z "$TARGET_WS" ]; then
+            TARGET_WS="name_${RANDOM}"
+          fi
+          echo "TARGET_WS=$TARGET_WS" >> $GITHUB_ENV
+
+      - name: Create new Tinybird environment with last partition data
+        run: |
+          echo "🚀 Creating new Tinybird environment: ${{ env.TARGET_WS }}"
+          # Create new workspace using Tinybird CLI with organization context only
+          tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            environment create "${{ env.TARGET_WS }}" --last-partition --wait
+          
+          echo "New environment created successfully ✅"
+
+      - name: Cleanup (if environment creation fails)
+        if: failure()
+        run: |
+          echo "Cleaning up on failure..."
+          
+          # Only attempt cleanup if we have the target token
+          if [ -n "$TINYBIRD_TOKEN" ]; then
+            echo "🗑️ Attempting to delete workspace: ${{ env.TARGET_WS }}"
+            tb --cloud \
+              --host "${{ env.TINYBIRD_HOST }}" \
+              --token "$TINYBIRD_TOKEN" \
+              enviroment rm "${{ env.TARGET_WS }}" --yes || echo "⚠️ Could not delete workspace (may not exist)"
+          fi 
