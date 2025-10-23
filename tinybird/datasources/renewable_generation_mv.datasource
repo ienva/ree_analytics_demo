@@ -14,6 +14,6 @@ SCHEMA >
     `value` Float64
 
 ENGINE "ReplacingMergeTree"
-ENGINE_SORTING_KEY "metric_id, metric_name, datetime"
+ENGINE_SORTING_KEY "metric_name, datetime"
 ENGINE_PARTITION_KEY "toYYYYMM(datetime)"
 ENGINE_VER "last_update"
