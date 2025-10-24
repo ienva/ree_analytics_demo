@@ -44,7 +44,7 @@ jobs:
           fi
           echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
 
-      - name: Set target workspace name 
+      - name: Set target environment name 
         run: |
           NAME="${{ env.SOURCE_WS }}_${{ github.ref_name }}"
           # Replace any character not [A-Za-z0-9_] with underscore
