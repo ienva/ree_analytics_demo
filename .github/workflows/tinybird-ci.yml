@@ -33,6 +33,7 @@ jobs:
       - name: Build project
         run: |
           cd tinybird
+          # Setting secrets and building
           tb build
       
       - name: Run Tinybird tests

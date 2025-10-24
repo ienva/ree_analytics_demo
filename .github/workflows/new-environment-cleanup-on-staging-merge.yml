@@ -13,7 +13,6 @@ permissions:
 env:
   TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
-  TINYBIRD_USER_TOKEN: ${{ secrets.TINYBIRD_USER_TOKEN }}
 
 jobs:
   cleanup:
@@ -64,17 +63,16 @@ jobs:
           echo "🔎 Checking if Tinybird workspace exists: ${{ env.TARGET_WS }}"
           LIST=$(tb --cloud \
             --host "${{ env.TINYBIRD_HOST }}" \
-            --token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            workspace ls || true)
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            environment ls || true)
           # Extract all workspace names from key:value lines
           MATCH=$(printf "%s" "$LIST" | sed -n 's/^name:[[:space:]]*//p' | grep -Fx "${{ env.TARGET_WS }}" || true)
           if [ -n "$MATCH" ]; then
-            echo "🗑️ Workspace found. Deleting: ${{ env.TARGET_WS }}"
+            echo "🗑️ Environment found. Deleting: ${{ env.TARGET_WS }}"
             tb --cloud \
               --host "${{ env.TINYBIRD_HOST }}" \
               --token "${{ env.TINYBIRD_TOKEN }}" \
-              --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
-              workspace delete "${{ env.TARGET_WS }}" --yes || echo "⚠️ Workspace deletion command failed"
+              environment rm "${{ env.TARGET_WS }}" --yes || echo "⚠️ Workspace deletion command failed"
           else
             echo "✅ Workspace not found. Nothing to delete."
           fi
