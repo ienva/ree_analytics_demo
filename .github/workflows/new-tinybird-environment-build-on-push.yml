@@ -11,6 +11,7 @@ env:
 
 jobs:
   build-environment:
+    if: github.ref_name != 'main' && github.ref_name != 'staging'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
