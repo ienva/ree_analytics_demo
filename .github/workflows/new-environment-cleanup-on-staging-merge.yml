@@ -44,7 +44,7 @@ jobs:
           fi
           echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
 
-      - name: Compute workspace name from merged branch
+      - name: Compute environment name from merged branch
         run: |
           BRANCH="${{ github.event.pull_request.head.ref }}"
           RAW_NAME="${{ env.SOURCE_WS }}_${BRANCH}"
@@ -58,7 +58,7 @@ jobs:
           echo "TARGET_WS=$TARGET_WS" >> $GITHUB_ENV
           echo "🧭 Computed workspace to delete: $TARGET_WS"
 
-      - name: Delete Tinybird workspace if it exists
+      - name: Delete Tinybird environment if it exists
         run: |
           echo "🔎 Checking if Tinybird workspace exists: ${{ env.TARGET_WS }}"
           LIST=$(tb --cloud \
