@@ -16,16 +16,10 @@ on:
         required: false
         type: boolean
         default: true
-      source_token:
-        description: 'Source workspace token (if different from default)'
-        required: false
-        type: string
 
 env:
   TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
-  ORG_ID: ${{ secrets.ORG_ID }}
-  TINYBIRD_USER_TOKEN: ${{ secrets.TINYBIRD_USER_TOKEN }}
 
 jobs:
   create-workspace-and-migrate:
@@ -53,256 +47,48 @@ jobs:
             exit 1
           fi
 
-      - name: Set up source token
-        run: |
-          # Set source token (use input if provided, otherwise use default)
-          if [ -n "${{ github.event.inputs.source_token }}" ]; then
-            export SOURCE_TOKEN="${{ github.event.inputs.source_token }}"
-          else
-            export SOURCE_TOKEN="${{ env.TINYBIRD_TOKEN }}"
-          fi
-          
-          echo "Source token configured: ${SOURCE_TOKEN:0:10}..."
-
-      - name: Create new Tinybird workspace
+      - name: Create new Tinybird environment
         run: |
           echo "🚀 Creating new Tinybird workspace: ${{ github.event.inputs.target_workspace }}"
-          # Create new workspace using Tinybird CLI with organization context only
+          
+          # Build the command with optional --last-partition flag
+          CMD="tb --cloud --host \"${{ env.TINYBIRD_HOST }}\" --token \"${{ env.TINYBIRD_TOKEN }}\" environment create \"${{ github.event.inputs.target_workspace }}\" --wait"
+          
+          if [ "${{ github.event.inputs.copy_data }}" = "true" ]; then
+            CMD="$CMD --last-partition"
+            echo "📋 Including last partition data in environment creation"
+          fi
+          
+          # Execute the command
+          eval $CMD
+          
+          echo "Environment created successfully ✅"
+
+      - name: Check if environment exists
+        run: |
+          echo "🔎 Checking if environment exists: "${{ github.event.inputs.target_workspace }}" 
+          LIST=$(tb --cloud \
+            --host "${{ env.TINYBIRD_HOST }}" \
+            --token "${{ env.TINYBIRD_TOKEN }}" \
+            environment ls || true)
+          # Extract all environment names from key:value lines
+          MATCH=$(printf "%s" "$LIST" | sed -n 's/^name:[[:space:]]*//p' | grep -Fx "${{ github.event.inputs.target_workspace }}" || true)
+          if [ -n "$MATCH" ]; then
+            echo "✅ Environment found: ${{ github.event.inputs.target_workspace }}"
+            echo "ENV_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "⚠️ Environment not found: ${{ github.event.inputs.target_workspace }}"
+            echo "ENV_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Update resources in the environment
+        if: env.ENV_EXISTS == 'true'
+        run: |
+          cd tinybird
+          echo "🔨 Building environment: ${{ env.TARGET_ENV }}"
           tb --cloud \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
-            --user-token "${{ env.TINYBIRD_USER_TOKEN }}" \
-            workspace create --organization-id "${{ env.ORG_ID }}" "${{ github.event.inputs.target_workspace }}" 
+            --environment="${{ env.TARGET_ENV }}" build
           
-          echo "✅ Workspace created successfully"
-          
-
-      - name: Deploy resources to new workspace
-        run: |
-          echo "📦 Deploying all resources to new workspace..."
-          cd tinybird
-
-          echo "Selecting the tokens to make the deployment"
-          tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace use "${{ github.event.inputs.target_workspace }}"
-          ADMIN_TOKEN_NEW=$(tb --cloud token ls | awk '/name: admin token/{getline; print $2}')
-          
-          # Deploy all resources (datasources, endpoints, materializations)
-          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
-            --token "${{ env.ADMIN_TOKEN_NEW }}" \
-            deploy --wait 
-          
-          echo "✅ Resources deployed successfully"
-
-      - name: Verify deployment
-        run: |
-          tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace use "${{ github.event.inputs.target_workspace }}"
-          ADMIN_TOKEN_NEW=$(tb --cloud token ls | awk '/name: admin token/{getline; print $2}')
-
-          echo "🔍 Verifying deployment in new workspace..."
-          cd tinybird
-          
-          # List all resources in the new workspace
-          echo "📊 Datasources:"
-          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
-            --token "${{ env.ADMIN_TOKEN_NEW }}" \
-            datasource ls
-          
-          echo "🔗 Endpoints:"
-          tb --cloud --host "${{ env.TINYBIRD_HOST }}" \
-            --token "${{ env.ADMIN_TOKEN_NEW }}" \
-            pipe ls 
-          
-          echo "✅ Deployment verification completed"
-
-      - name: Export data from datasources
-        if: github.event.inputs.copy_data == 'true'
-        run: |
-          echo "📋 Copying last partition data from source to target workspace..."
-
-          echo "Selecting the materializations to avoid copy data from them"
-          datasources=()
-
-          for file in tinybird/materializations/*.pipe; do
-            if [ -f "$file" ]; then
-              # Look for the line starting with DATASOURCE and get the 2nd word
-              ds=$(grep -E '^DATASOURCE ' "$file" | awk '{print $2}')
-              
-              if [ -n "$ds" ]; then
-                datasources+=("$ds")
-              fi
-            fi
-          done
-          
-          # Get list of datasources from the tinybird directory
-          cd tinybird/datasources
-          
-          for datasource_file in *.datasource; do
-            if [ -f "$datasource_file" ]; then
-              datasource_name=$(basename "$datasource_file" .datasource)
-              if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
-                echo "🔄 Processing datasource: $datasource_name"
-                echo "Selecting partition key or date time field to export data"
-                partition_key=$(awk -F'"' '/^[[:space:]]*ENGINE_PARTITION_KEY/ {print $2; exit}' "$datasource_file")
-
-                # If the partition key doesn't exists will check for a datetime value or will export 10k radom rows
-                if [ -z "$partition_key" ]; then
-                  echo "🔄 Processing datasource: $datasource_name"
-                  datetime_field_key=$(grep -Eo '`[^`]+`[[:space:]]+DateTime' "$datasource_file" | head -n1 | sed -E 's/^`([^`]+)`.*/\1/')
-
-                  # It doesn't exist datetime field
-                  if [ -z "$datetime_field_key" ]; then
-                    # Export data from source workspace
-                    tb --cloud \
-                      --host "${{ env.TINYBIRD_HOST }}" \
-                      --token "$TINYBIRD_TOKEN" \
-                      datasource export "$datasource_name" --rows 10000 --format CSV
-                  # It exists the date time field
-                  else
-                    where_clause="$datetime_field_key >= now() - INTERVAL 1 DAY"
-                    tb --cloud \
-                      --host "${{ env.TINYBIRD_HOST }}" \
-                      --token "$TINYBIRD_TOKEN" \
-                      datasource export "$datasource_name" --where "$where_clause" --format CSV
-                  fi
-
-                # It exists partition key
-                else
-                  echo "Partition key: $partition_key"
-                  # Selecting last partition value
-                  echo "Selecting last partition value for $datasource_name"
-                  last_partition_value=$(tb --cloud \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "${{ env.TINYBIRD_TOKEN }}" \
-                    sql "SELECT _partition_id
-                        FROM $datasource_name
-                        ORDER BY _part_index DESC
-                        LIMIT 1" | awk '/^─/{getline; print $1; exit}')
-
-                  where_clause="toString($partition_key) = '$last_partition_value'"
-
-                  # Export data from source workspace
-                  tb --cloud \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "${{ env.TINYBIRD_TOKEN }}" \
-                    datasource export "$datasource_name" --where "$where_clause" --rows 1000000 --format CSV
-                fi
-
-              else
-                echo "⚠️ Datasource $datasource_name is a materializations, skipping"
-              fi
-            fi
-          done
-          
-          echo "✅ Data copy process completed"
-
-
-      - name: Copy data in the new workspace
-        if: github.event.inputs.copy_data == 'true'
-        run: |
-          echo "📋 Copying last partition data from source to target workspace..."
-
-          echo "Selecting the materializations to avoid copy data from them"
-          datasources=()
-
-          for file in tinybird/materializations/*.pipe; do
-            if [ -f "$file" ]; then
-              # Look for the line starting with DATASOURCE and get the 2nd word
-              ds=$(grep -E '^DATASOURCE ' "$file" | awk '{print $2}')
-              
-              if [ -n "$ds" ]; then
-                datasources+=("$ds")
-              fi
-            fi
-          done
-
-          tb --cloud --user-token "${{ env.TINYBIRD_USER_TOKEN }}" workspace use "${{ github.event.inputs.target_workspace }}"
-          ADMIN_TOKEN_NEW=$(tb --cloud token ls | awk '/name: admin token/{getline; print $2}')
-          
-          # Get list of datasources from the tinybird directory
-          cd tinybird/datasources
-          
-          for datasource_file in *.datasource; do
-            if [ -f "$datasource_file" ]; then
-              datasource_name=$(basename "$datasource_file" .datasource)
-              if [[ ! " ${datasources[*]} " =~ " ${datasource_name} " ]]; then
-                echo "🔄 Processing datasource: $datasource_name"
-                
-                # Import data to target workspace
-                if [ -f "fixtures/${datasource_name}.csv" ]; then
-                  tb --cloud \
-                    --host "${{ env.TINYBIRD_HOST }}" \
-                    --token "${{ env.ADMIN_TOKEN_NEW }}"\
-                    datasource append "$datasource_name" \
-                    --file "fixtures/${datasource_name}.csv"
-                  
-                  echo "✅ Successfully copied data for $datasource_name"
-                else
-                  echo "⚠️ No data file found for $datasource_name"
-                fi
-                
-                # Clean up temporary directory
-                rm -rf "fixtures/"
-                # else
-                #   echo "⚠️ No partitions found for datasource: $datasource_name"
-                # fi
-              else
-                echo "⚠️ Datasource $datasource_name is a materializations, skipping"
-              fi
-            fi
-          done
-          
-          echo "✅ Data copy process completed"
-
-      - name: Generate workspace summary
-        run: |
-          echo "📊 Generating workspace summary..."
-          
-          echo "## Workspace Creation Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ✅ New Workspace Created" >> $GITHUB_STEP_SUMMARY
-          echo "- **Workspace Name**: ${{ github.event.inputs.target_workspace }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Host**: ${{ env.TINYBIRD_HOST }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          echo "### 📦 Resources Deployed" >> $GITHUB_STEP_SUMMARY
-          cd tinybird
-          
-          # Count datasources
-          datasource_count=$(ls datasources/*.datasource 2>/dev/null | wc -l)
-          echo "- **Datasources**: $datasource_count" >> $GITHUB_STEP_SUMMARY
-          
-          # Count endpoints
-          endpoint_count=$(ls endpoints/*.pipe 2>/dev/null | wc -l)
-          echo "- **Endpoints**: $endpoint_count" >> $GITHUB_STEP_SUMMARY
-          
-          # Count materializations
-          materialization_count=$(ls materializations/*.pipe 2>/dev/null | wc -l)
-          echo "- **Materializations**: $materialization_count" >> $GITHUB_STEP_SUMMARY
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ github.event.inputs.copy_data }}" = "true" ]; then
-            echo "### 📋 Data Migration" >> $GITHUB_STEP_SUMMARY
-            echo "- **Source Workspace**: ${{ github.event.inputs.source_workspace }}" >> $GITHUB_STEP_SUMMARY
-            echo "- **Data Copied**: Last partition from each datasource" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 Next Steps" >> $GITHUB_STEP_SUMMARY
-          echo "1. Verify the new workspace in Tinybird dashboard" >> $GITHUB_STEP_SUMMARY
-          echo "2. Update any configuration files that reference the workspace" >> $GITHUB_STEP_SUMMARY
-          echo "3. Test endpoints and materializations" >> $GITHUB_STEP_SUMMARY
-
-      - name: Cleanup (if workspace creation fails)
-        if: failure()
-        run: |
-          echo "🧹 Cleaning up on failure..."
-          
-          # Only attempt cleanup if we have the target token
-          if [ -n "$TINYBIRD_USER_TOKEN" ]; then
-            echo "🗑️ Attempting to delete workspace: ${{ github.event.inputs.target_workspace }}"
-            tb --cloud \
-              --host "${{ env.TINYBIRD_HOST }}" \
-              --token "$TINYBIRD_USER_TOKEN" \
-              workspace delete "${{ github.event.inputs.target_workspace }}" --yes || echo "⚠️ Could not delete workspace (may not exist)"
-          fi 
+          echo "✅ Environment build completed successfully"
