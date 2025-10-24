@@ -34,15 +34,11 @@ jobs:
         run: |
           cd tinybird
           # Setting secrets and building
-          tb secret set s3_access_key_test_aa test_aaa
-          tb secret set s3_secret_test_aa test_aaa
           tb build
       
       - name: Run Tinybird tests
         run: |
           cd tinybird
-          tb secret set s3_access_key_test_aa test_aaa
-          tb secret set s3_secret_test_aa test_aaa
           tb test run
       
       - name: Run Python tests
