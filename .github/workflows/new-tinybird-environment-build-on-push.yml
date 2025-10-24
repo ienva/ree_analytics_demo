@@ -1,9 +1,7 @@
 name: Tinybird Environment Build on Push
 
 on:
-  push:
-    branches:
-      - '*'  # Triggers on push to any branch
+  push: {}
 
 env:
   TINYBIRD_HOST: ${{ secrets.TINYBIRD_HOST }}
