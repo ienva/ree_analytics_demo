@@ -8,7 +8,7 @@ env:
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
 
 jobs:
-  create-environment-last-partition:
+  create-branch-last-partition:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -44,7 +44,7 @@ jobs:
           fi
           echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
 
-      - name: Set target environment name 
+      - name: Set target branch name
         run: |
           NAME="${{ env.SOURCE_WS }}_${{ github.ref_name }}"
           # Replace any character not [A-Za-z0-9_] with underscore
@@ -62,18 +62,18 @@ jobs:
           fi
           echo "TARGET_WS=$TARGET_WS" >> $GITHUB_ENV
 
-      - name: Create new Tinybird environment with last partition data
+      - name: Create new Tinybird branch with last partition data
         run: |
-          echo "🚀 Creating new Tinybird environment: ${{ env.TARGET_WS }}"
+          echo "🚀 Creating new Tinybird branch: ${{ env.TARGET_WS }}"
           # Create new workspace using Tinybird CLI with organization context only
           tb --cloud \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
-            environment create "${{ env.TARGET_WS }}" --last-partition --wait
+            branch create "${{ env.TARGET_WS }}" --last-partition --wait
           
-          echo "New environment created successfully ✅"
+          echo "New branch created successfully ✅"
 
-      - name: Cleanup (if environment creation fails)
+      - name: Cleanup (if branch creation fails)
         if: failure()
         run: |
           echo "Cleaning up on failure..."
@@ -84,5 +84,5 @@ jobs:
             tb --cloud \
               --host "${{ env.TINYBIRD_HOST }}" \
               --token "$TINYBIRD_TOKEN" \
-              enviroment rm "${{ env.TARGET_WS }}" --yes || echo "⚠️ Could not delete workspace (may not exist)"
+              branch rm "${{ env.TARGET_WS }}" --yes || echo "⚠️ Could not delete workspace (may not exist)"
           fi 

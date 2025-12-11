@@ -1,4 +1,4 @@
-name: Tinybird Environment Build on Push
+name: Tinybird Branch Build on Push
 
 on:
   push: {}
@@ -8,7 +8,7 @@ env:
   TINYBIRD_TOKEN: ${{ secrets.TINYBIRD_TOKEN }}
 
 jobs:
-  build-environment:
+  build-branch:
     if: github.ref_name != 'main' && github.ref_name != 'staging'
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +37,7 @@ jobs:
           fi
           echo "SOURCE_WS=$SOURCE_WS" >> $GITHUB_ENV
 
-      - name: Compute environment name from branch
+      - name: Compute branch name from branch
         run: |
           BRANCH="${{ github.ref_name }}"
           RAW_NAME="${{ env.SOURCE_WS }}_${BRANCH}"
@@ -49,32 +49,32 @@ jobs:
           esac
           if [ -z "$TARGET_ENV" ]; then TARGET_ENV="name_${RANDOM}"; fi
           echo "TARGET_ENV=$TARGET_ENV" >> $GITHUB_ENV
-          echo "🧭 Computed environment to build: $TARGET_ENV"
+          echo "🧭 Computed branch to build: $TARGET_ENV"
 
-      - name: Check if environment exists
+      - name: Check if branch exists
         run: |
-          echo "🔎 Checking if environment exists: ${{ env.TARGET_ENV }}"
+          echo "🔎 Checking if branch exists: ${{ env.TARGET_ENV }}"
           LIST=$(tb --cloud \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
-            environment ls || true)
-          # Extract all environment names from key:value lines
+            branch ls || true)
+          # Extract all branch names from key:value lines
           MATCH=$(printf "%s" "$LIST" | sed -n 's/^name:[[:space:]]*//p' | grep -Fx "${{ env.TARGET_ENV }}" || true)
           if [ -n "$MATCH" ]; then
-            echo "✅ Environment found: ${{ env.TARGET_ENV }}"
+            echo "✅ Branch found: ${{ env.TARGET_ENV }}"
             echo "ENV_EXISTS=true" >> $GITHUB_ENV
           else
-            echo "⚠️ Environment not found: ${{ env.TARGET_ENV }}"
+            echo "⚠️ Branch not found: ${{ env.TARGET_ENV }}"
             echo "ENV_EXISTS=false" >> $GITHUB_ENV
           fi
 
-      - name: Build environment (if exists)
+      - name: Build branch (if exists)
         if: env.ENV_EXISTS == 'true'
         run: |
-          echo "🔨 Building environment: ${{ env.TARGET_ENV }}"
+          echo "🔨 Building branch: ${{ env.TARGET_ENV }}"
           tb --cloud \
             --host "${{ env.TINYBIRD_HOST }}" \
             --token "${{ env.TINYBIRD_TOKEN }}" \
-            --environment="${{ env.TARGET_ENV }}" build
+            --branch="${{ env.TARGET_ENV }}" build
           
-          echo "✅ Environment build completed successfully"
+          echo "✅ Branch build completed successfully"
